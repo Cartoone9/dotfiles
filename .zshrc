@@ -117,7 +117,9 @@ alias gc='git commit -m'
 alias gp='git push'
 alias update='brew update'
 alias vim='nvim'
-alias cl='clear'
+alias cl='printf "\n%.0s" {1..$LINES}'
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+printf '\n%.0s' {1..$LINES}
