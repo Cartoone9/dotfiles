@@ -122,4 +122,8 @@ alias cl='printf "\n%.0s" {1..$LINES}'
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
+if [ -f "$HOME/.profile" ]; then
+	source "$HOME/.profile"
+fi
+
 printf '\n%.0s' {1..$LINES}
