@@ -112,11 +112,14 @@ source $ZSH/oh-my-zsh.sh
 
 alias ll='ls -la'
 alias gs='git status'
-alias ga='git add .'
+alias ga='git add . && git status'
 alias gc='git commit -m'
 alias gp='git push'
+alias gf='git fetch'
+alias gpu='git pull'
 alias update='brew update'
 alias vim='nvim'
+alias ccw='cc -Wall -Werror -Wextra'
 alias cl='printf "\n%.0s" {1..$LINES}'
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
