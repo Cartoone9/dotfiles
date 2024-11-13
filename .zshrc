@@ -120,6 +120,7 @@ alias gpu='git pull'
 alias update='brew update'
 alias vim='nvim'
 alias ccw='cc -Wall -Werror -Wextra'
+alias norm='norminette'
 alias cl='printf "\n%.0s" {1..$LINES}'
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
