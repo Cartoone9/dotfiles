@@ -132,3 +132,7 @@ if [ -f "$HOME/.profile" ]; then
 fi
 
 printf '\n%.0s' {1..$LINES}
+
+alias francinette=/home/cartoone/francinette/tester.sh
+
+alias paco=/home/cartoone/francinette/tester.sh
