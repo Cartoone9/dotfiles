@@ -124,8 +124,9 @@ alias norm='norminette'
 alias bat='batcat'
 alias cl='printf "\n%.0s" {1..$LINES}'
 
-alias francinette=/home/cartoone/francinette/tester.sh
+alias franciPC=/home/cartoone/francinette/tester.sh
 alias franci42=/homes/jramiro/francinette/tester.sh
+alias franciMBP=/Users/joris/francinette/tester.sh
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
