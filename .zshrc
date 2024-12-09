@@ -123,6 +123,7 @@ alias ccw='cc -Wall -Werror -Wextra'
 alias norm='norminette'
 alias bat='batcat'
 alias cl='printf "\n%.0s" {1..$LINES}'
+alias format='c_formatter *.c && c_formatter *.h'
 
 alias franciPC=/home/cartoone/francinette/tester.sh
 alias franci42=/mnt/nfs/homes/jramiro/francinette/tester.sh
