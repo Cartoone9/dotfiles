@@ -129,6 +129,8 @@ alias franciPC=/home/cartoone/francinette/tester.sh
 alias franci42=/mnt/nfs/homes/jramiro/francinette/tester.sh
 alias franciMBP=/Users/joris/francinette/tester.sh
 
+export PATH=/mnt/nfs/homes/jramiro/.local/funcheck/host:$PATH
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
