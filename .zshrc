@@ -124,7 +124,7 @@ alias norm='norminette'
 alias bat='batcat'
 alias cl='printf "\n%.0s" {1..$LINES}'
 alias cls='printf "\n%.0s" {1..$LINES} && ls'
-alias format='c_formatter_42 *.c && c_formatter_42 *.h'
+alias format='c_formatter_42 ./**/*.{c,h} > /dev/null && echo "Formatting done."'
 alias lock='/sgoinfre/goinfre/Perso/jmaia/Public/pimp_my_lock_v2/pimp_my_lock /mnt/nfs/homes/jramiro/Pictures/lock-gto.gif center center 40% 40%'
 
 alias franciPC=/home/cartoone/francinette/tester.sh
