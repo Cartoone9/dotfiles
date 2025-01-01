@@ -126,6 +126,10 @@ alias cl='printf "\n%.0s" {1..$LINES}'
 alias cls='printf "\n%.0s" {1..$LINES} && ls'
 alias format='c_formatter_42 ./**/*.{c,h} > /dev/null && echo "Formatting done."'
 alias lock='/sgoinfre/goinfre/Perso/jmaia/Public/pimp_my_lock_v2/pimp_my_lock /mnt/nfs/homes/jramiro/Pictures/lock-gto.gif center center 40% 40%'
+alias ls='eza'
+alias ll='eza -l'
+alias la='eza -la'
+alias lt='eza --tree'
 
 alias franciPC=/home/cartoone/francinette/tester.sh
 alias franci42=/mnt/nfs/homes/jramiro/francinette/tester.sh
