@@ -144,4 +144,13 @@ if [ -f "$HOME/.profile" ]; then
 	source "$HOME/.profile"
 fi
 
+# Function to change directory when exiting Neovim
+nvim() {
+    command nvim "$@"
+    if [ -f "$HOME/.nvim_last_dir" ]; then
+        source "$HOME/.nvim_last_dir"
+        rm "$HOME/.nvim_last_dir"
+    fi
+}
+
 printf '\n%.0s' {1..$LINES}
