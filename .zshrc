@@ -118,6 +118,7 @@ alias gp='git push'
 alias gf='git fetch && git status'
 alias gpu='git pull'
 alias update='brew update'
+alias updt='sudo apt update && sudo apt upgrade'
 alias vi='nvim'
 alias ccw='cc -Wall -Werror -Wextra'
 alias norm='norminette'
@@ -131,6 +132,7 @@ alias ls='eza'
 alias ll='eza -l'
 alias la='eza -la'
 alias lt='eza --tree'
+alias numpad='echo 0 | sudo tee /sys/class/leds/input4::numlock/brightness'
 
 alias franciPC=/home/cartoone/francinette/tester.sh
 alias franci42=/home/jramiro/francinette/tester.sh
