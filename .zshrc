@@ -110,7 +110,6 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-alias ll='ls -la'
 alias gs='git status'
 alias ga='git add . && git status'
 alias gc='git commit -m'
