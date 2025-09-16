@@ -124,13 +124,15 @@ alias norm='norminette'
 alias bat='batcat'
 alias cl='printf "\n%.0s" {1..$LINES}'
 alias cls='printf "\n%.0s" {1..$LINES} && ls'
+alias cll='printf "\n%.0s" {1..$LINES} && ll'
 alias clt='printf "\n%.0s" {1..$LINES} && lt'
 alias format='c_formatter_42 ./**/*.{c,h} > /dev/null && echo "Formatting done."'
 alias lock='/sgoinfre/goinfre/Perso/jmaia/Public/pimp_my_lock_v2/pimp_my_lock /home/jramiro/Pictures/lock-gto.gif center center 40% 40%'
-alias ls='eza'
-alias ll='eza -l'
-alias la='eza -la'
-alias lt='eza --tree'
+alias ls='eza --icons'
+alias ll='eza -l --icons'
+alias la='eza -la --icons'
+alias lt='eza --tree --icons'
+alias l='ll'
 alias numpad='echo 0 | sudo tee /sys/class/leds/input4::numlock/brightness'
 alias fd='fdfind'
 
@@ -165,30 +167,30 @@ export NVM_DIR="$HOME/.nvm"
 # fuzzy finder cd
 cdf() {
 	local dir
-	local bases=(~/42 ~/CTF ~/Documents ~/Downloads ~/Desktop ~/.config)
+	local bases=(. ~/42 ~/CTF ~/Documents ~/Downloads ~/Desktop)
 
-	dir=$(fd . . "${bases[@]}" \
+	dir=$(fd "${bases[@]}" \
 		--type d \
 		--hidden \
 		--no-ignore \
 		--exclude '.cache' \
-		--exclude '.local' \
 		--exclude '.mozilla' \
 		--exclude 'node_modules' \
 		--exclude '.git' \
 		--exclude '.cargo' \
 		--exclude '.var' \
+		--exclude '.local' \
 		| sed "s|^$HOME|~|" \
-		| fzf --preview 'ls -la "$(echo {} | sed "s|^~|$HOME|")"')
+		| fzf --preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
+		--preview-window=right:50%:wrap)
 
 	[ -n "$dir" ] && cd "${dir/#\~/$HOME}"
 }
 
 cdfa() {
 	local dir
-	local bases=(~)
 
-	dir=$(fd . "${bases[@]}" \
+	dir=$(fd . ~ \
 		--type d \
 		--hidden \
 		--no-ignore \
@@ -199,7 +201,8 @@ cdfa() {
 		--exclude '.cargo' \
 		--exclude '.var' \
 		| sed "s|^$HOME|~|" \
-		| fzf --preview 'ls -la "$(echo {} | sed "s|^~|$HOME|")"')
+		| fzf --preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
+		--preview-window=right:50%:wrap)
 
 		# Convert back to full path for cd
 		[ -n "$dir" ] && cd "${dir/#\~/$HOME}"
