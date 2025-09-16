@@ -2,7 +2,7 @@
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+	source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
 # If you come from bash you might have to change your $PATH.
@@ -116,8 +116,8 @@ alias gc='git commit -m'
 alias gp='git push'
 alias gf='git fetch && git status'
 alias gpu='git pull'
-alias update='brew update'
-alias updt='sudo apt update && sudo apt upgrade'
+alias updt='brew update'
+alias update='sudo apt update && sudo apt upgrade -y'
 alias vi='nvim'
 alias ccw='cc -Wall -Werror -Wextra'
 alias norm='norminette'
@@ -132,6 +132,7 @@ alias ll='eza -l'
 alias la='eza -la'
 alias lt='eza --tree'
 alias numpad='echo 0 | sudo tee /sys/class/leds/input4::numlock/brightness'
+alias fd='fdfind'
 
 alias franciPC=/home/cartoone/francinette/tester.sh
 alias franci42=/home/jramiro/francinette/tester.sh
@@ -148,11 +149,11 @@ fi
 
 # Function to change directory when exiting Neovim
 nvim() {
-    command nvim "$@"
-    if [ -f "$HOME/.nvim_last_dir" ]; then
-        source "$HOME/.nvim_last_dir"
-        rm "$HOME/.nvim_last_dir"
-    fi
+	command nvim "$@"
+	if [ -f "$HOME/.nvim_last_dir" ]; then
+		source "$HOME/.nvim_last_dir"
+		rm "$HOME/.nvim_last_dir"
+	fi
 }
 
 printf '\n%.0s' {1..$LINES}
@@ -160,3 +161,48 @@ printf '\n%.0s' {1..$LINES}
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# fuzzy finder cd
+cdf() {
+	local dir
+	local bases=(~/42 ~/CTF ~/Documents ~/Downloads ~/Desktop ~/.config)
+
+	dir=$(fd . . "${bases[@]}" \
+		--type d \
+		--hidden \
+		--no-ignore \
+		--exclude '.cache' \
+		--exclude '.local' \
+		--exclude '.mozilla' \
+		--exclude 'node_modules' \
+		--exclude '.git' \
+		--exclude '.cargo' \
+		--exclude '.var' \
+		| sed "s|^$HOME|~|" \
+		| fzf --preview 'ls -la "$(echo {} | sed "s|^~|$HOME|")"')
+
+	[ -n "$dir" ] && cd "${dir/#\~/$HOME}"
+}
+
+cdfa() {
+	local dir
+	local bases=(~)
+
+	dir=$(fd . "${bases[@]}" \
+		--type d \
+		--hidden \
+		--no-ignore \
+		--exclude '.cache' \
+		--exclude '.mozilla' \
+		--exclude 'node_modules' \
+		--exclude '.git' \
+		--exclude '.cargo' \
+		--exclude '.var' \
+		| sed "s|^$HOME|~|" \
+		| fzf --preview 'ls -la "$(echo {} | sed "s|^~|$HOME|")"')
+
+		# Convert back to full path for cd
+		[ -n "$dir" ] && cd "${dir/#\~/$HOME}"
+	}
+
+export FZF_DEFAULT_OPTS="--color=fg:#f8f8f2,hl:#f92672,fg+:#f8f8f2,hl+:#fd971f,pointer:#66d9ef,marker:#a6e22e,info:#ae81ff,prompt:#f8f8f2"
