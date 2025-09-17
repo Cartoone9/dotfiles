@@ -164,7 +164,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# fuzzy finder cd
+# fzf powered main directories search
 cdf() {
 	local dir
 	local bases=(. ~/42 ~/CTF ~/Documents ~/Downloads ~/Desktop)
@@ -187,6 +187,30 @@ cdf() {
 	[ -n "$dir" ] && cd "${dir/#\~/$HOME}"
 }
 
+# fzf powered main directories search and vi
+cdw() {
+	local dir
+	local bases=(. ~/42 ~/CTF ~/Documents ~/Downloads ~/Desktop)
+
+	dir=$(fd "${bases[@]}" \
+		--type d \
+		--hidden \
+		--no-ignore \
+		--exclude '.cache' \
+		--exclude '.mozilla' \
+		--exclude 'node_modules' \
+		--exclude '.git' \
+		--exclude '.cargo' \
+		--exclude '.var' \
+		--exclude '.local' \
+		| sed "s|^$HOME|~|" \
+		| fzf --preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
+		--preview-window=right:50%:wrap)
+
+	[ -n "$dir" ] && cd "${dir/#\~/$HOME}" && vi
+}
+
+# fzf powered all directories search
 cdfa() {
 	local dir
 
@@ -208,4 +232,25 @@ cdfa() {
 		[ -n "$dir" ] && cd "${dir/#\~/$HOME}"
 	}
 
+# fzf powered history search
+fh() {
+	eval "$(fc -l 1 | fzf --tac --no-sort +s --preview 'echo {}' | sed 's/^[0-9]\+\s*//')"
+}
+
+# fzf powered process killer
+fkill() {
+	local pids
+	# Show PID, USER, COMMAND; multi-select
+	pids=$(ps -eo pid,user,comm --sort=pid | awk '{printf "%-8s %-15s %s\n",$1,$2,$3}' | fzf --header="Select process(es) to kill" --multi | awk '{print $1}')
+
+	if [[ -n "$pids" ]]; then
+		# Use xargs to split lines properly
+		echo "$pids" | xargs kill 2>/dev/null || echo "$pids" | xargs kill -9
+		echo "Killed PID(s): $pids"
+	else
+		echo "No process selected."
+	fi
+}
+
+# fzf colors
 export FZF_DEFAULT_OPTS="--color=fg:#f8f8f2,hl:#f92672,fg+:#f8f8f2,hl+:#fd971f,pointer:#66d9ef,marker:#a6e22e,info:#ae81ff,prompt:#f8f8f2"
