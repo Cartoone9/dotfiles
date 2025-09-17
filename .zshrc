@@ -254,3 +254,6 @@ fkill() {
 
 # fzf colors
 export FZF_DEFAULT_OPTS="--color=fg:#f8f8f2,hl:#f92672,fg+:#f8f8f2,hl+:#fd971f,pointer:#66d9ef,marker:#a6e22e,info:#ae81ff,prompt:#f8f8f2"
+
+# eza theme color
+export EZA_COLORS="Makefile=38;5;197;1;4"
