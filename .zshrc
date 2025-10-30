@@ -110,6 +110,10 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+export EDITOR="nvim"
+export VISUAL="nvim"
+
+alias g='git fetch --all --prune && git log --oneline --all --graph'
 alias gs='git status'
 alias ga='git add . && git status'
 alias gc='git commit -m'
