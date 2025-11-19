@@ -140,7 +140,8 @@ alias l='ll'
 alias numpad='echo 0 | sudo tee /sys/class/leds/input4::numlock/brightness'
 alias fd='fdfind'
 alias ff='cl && fastfetch'
-alias cppinit='mkdir -p srcs hdrs && printf -- "-std=c++98\n-Wall\n-Wextra\n-Werror\n-Ihdrs\n-Isrcs\n" > compile_flags.txt && echo "compile_flags.txt" >> .gitignore'
+alias cppinit='printf -- "-std=c++98\n-Wall\n-Wextra\n-Werror\n-Ihdrs\n-Isrcs\n" > compile_flags.txt'
+alias iginit='printf -- "*.o\n.objs\ncompile_flags.txt\n" >> .gitignore'
 
 alias franciPC=/home/cartoone/francinette/tester.sh
 alias franci42=/home/jramiro/francinette/tester.sh
