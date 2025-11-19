@@ -131,7 +131,6 @@ alias cls='cl && ls'
 alias cll='cl && ll'
 alias clt='cl && lt'
 alias format='c_formatter_42 ./**/*.{c,h} > /dev/null && echo "Formatting done."'
-alias lock='/sgoinfre/goinfre/Perso/jmaia/Public/pimp_my_lock_v2/pimp_my_lock /home/jramiro/Pictures/lock-gto.gif center center 40% 40%'
 alias ls='eza --icons'
 alias ll='eza -l --icons'
 alias la='eza -la --icons'
@@ -144,9 +143,7 @@ alias cfinit='printf -- "-std=c++98\n-Wall\n-Wextra\n-Werror\n-Ihdrs\n-Isrcs\n" 
 alias iginit='printf -- "*.o\n.objs\ncompile_flags.txt\n" >> .gitignore'
 alias check='~/scripts/check_repos.zsh'
 
-alias franciPC=/home/cartoone/francinette/tester.sh
-alias franci42=/home/jramiro/francinette/tester.sh
-alias franciMBP=/Users/joris/francinette/tester.sh
+alias franci="$HOME/francinette/tester.sh"
 
 export PATH=/home/jramiro/.local/funcheck/host:$PATH
 
@@ -158,36 +155,64 @@ if [ -f "$HOME/.profile" ]; then
 fi
 
 # Function to change directory when exiting Neovim
-nvim() {
-	command nvim "$@"
-	if [ -f "$HOME/.nvim_last_dir" ]; then
-		source "$HOME/.nvim_last_dir"
-		rm "$HOME/.nvim_last_dir"
-	fi
-}
+# nvim() {
+# 	command nvim "$@"
+# 	if [ -f "$HOME/.nvim_last_dir" ]; then
+# 		source "$HOME/.nvim_last_dir"
+# 		rm "$HOME/.nvim_last_dir"
+# 	fi
+# }
+#
+# nvim() {
+#     if declare -f node > /dev/null; then
+#         zsh_nvm_lazy_load
+#     fi
+#
+#     command nvim "$@"
+# }
 
 printf '\n%.0s' {1..$LINES}
 
+# NVM ===================================================================================================
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Define the function that loads nvm only when needed
+zsh_nvm_lazy_load() {
+  # Cleanup the placeholder functions
+  unset -f nvm node npm npx yarn pnpm 2>/dev/null
+
+  # Load NVM
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  
+  # Load NVM bash completion (optional, slightly slower)
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+}
+
+# Create placeholder functions that trigger the loader
+nvm() { zsh_nvm_lazy_load; nvm "$@"; }
+node() { zsh_nvm_lazy_load; node "$@"; }
+npm() { zsh_nvm_lazy_load; npm "$@"; }
+npx() { zsh_nvm_lazy_load; npx "$@"; }
+yarn() { zsh_nvm_lazy_load; yarn "$@"; }
+pnpm() { zsh_nvm_lazy_load; pnpm "$@"; }
+# NVM ===================================================================================================
+
+FD_EXCLUDES=(--exclude '.cache' --exclude '.mozilla' --exclude 'node_modules' --exclude '.git' --exclude '.cargo' --exclude '.var' --exclude '.local')
+BASES=(. ~/42 ~/CTF ~/Documents ~/Downloads ~/Desktop)
 
 # fzf powered main directories search
 cdf() {
 	local dir
-	local bases=(. ~/42 ~/CTF ~/Documents ~/Downloads ~/Desktop)
 
-	dir=$(fd "${bases[@]}" \
+	dir=$(fd "${BASES[@]}" \
 		--type d \
 		--hidden \
 		--no-ignore \
-		--exclude '.cache' \
-		--exclude '.mozilla' \
-		--exclude 'node_modules' \
-		--exclude '.git' \
-		--exclude '.cargo' \
-		--exclude '.var' \
-		--exclude '.local' \
+		"${FD_EXCLUDES[@]}" \
 		| sed "s|^$HOME|~|" \
 		| fzf --preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
 		--preview-window=right:50%:wrap)
@@ -198,19 +223,12 @@ cdf() {
 # fzf powered main directories search and vi
 cdw() {
 	local dir
-	local bases=(. ~/42 ~/CTF ~/Documents ~/Downloads ~/Desktop)
 
-	dir=$(fd "${bases[@]}" \
+	dir=$(fd "${BASES[@]}" \
 		--type d \
 		--hidden \
 		--no-ignore \
-		--exclude '.cache' \
-		--exclude '.mozilla' \
-		--exclude 'node_modules' \
-		--exclude '.git' \
-		--exclude '.cargo' \
-		--exclude '.var' \
-		--exclude '.local' \
+		"${FD_EXCLUDES[@]}" \
 		| sed "s|^$HOME|~|" \
 		| fzf --preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
 		--preview-window=right:50%:wrap)
@@ -226,19 +244,14 @@ cdfa() {
 		--type d \
 		--hidden \
 		--no-ignore \
-		--exclude '.cache' \
-		--exclude '.mozilla' \
-		--exclude 'node_modules' \
-		--exclude '.git' \
-		--exclude '.cargo' \
-		--exclude '.var' \
+		"${FD_EXCLUDES[@]}" \
 		| sed "s|^$HOME|~|" \
 		| fzf --preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
 		--preview-window=right:50%:wrap)
 
-		# Convert back to full path for cd
-		[ -n "$dir" ] && cd "${dir/#\~/$HOME}"
-	}
+	# Convert back to full path for cd
+	[ -n "$dir" ] && cd "${dir/#\~/$HOME}"
+}
 
 # fzf powered history search
 fh() {
