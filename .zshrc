@@ -142,6 +142,7 @@ alias fd='fdfind'
 alias ff='cl && fastfetch'
 alias cfinit='printf -- "-std=c++98\n-Wall\n-Wextra\n-Werror\n-Ihdrs\n-Isrcs\n" > compile_flags.txt'
 alias iginit='printf -- "*.o\n.objs\ncompile_flags.txt\n" >> .gitignore'
+alias check='~/scripts/check_repos.zsh'
 
 alias franciPC=/home/cartoone/francinette/tester.sh
 alias franci42=/home/jramiro/francinette/tester.sh
