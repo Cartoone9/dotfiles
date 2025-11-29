@@ -279,3 +279,11 @@ export EZA_COLORS="Makefile=38;5;197;1;4"
 # Go config
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$(go env GOPATH)/bin
+
+# Gita combined fetch and status check (called gcheck)
+function gcheck() {
+  echo "Fetching remote changes for all repositories..."
+  gita fetch
+  echo "--- Local and Remote Status (ll) ---"
+  gita ll
+}
