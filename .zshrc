@@ -275,3 +275,7 @@ export FZF_DEFAULT_OPTS="--color=fg:#f8f8f2,hl:#f92672,fg+:#f8f8f2,hl+:#fd971f,p
 
 # eza theme color
 export EZA_COLORS="Makefile=38;5;197;1;4"
+
+# Go config
+export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:$(go env GOPATH)/bin
