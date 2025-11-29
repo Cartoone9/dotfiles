@@ -128,11 +128,11 @@ alias cls='cl && ls'
 alias cll='cl && ll'
 alias clt='cl && lt'
 alias format='c_formatter_42 ./**/*.{c,h} > /dev/null && echo "Formatting done."'
-alias ls='eza --icons'
-alias ll='eza -l --icons'
-alias la='eza -la --icons'
-alias lt='eza --tree --icons'
-alias l='ll'
+# alias ls='eza --icons'
+# alias ll='eza -l --icons'
+# alias la='eza -la --icons'
+# alias lt='eza --tree --icons'
+# alias l='ll'
 alias numpad='echo 0 | sudo tee /sys/class/leds/input4::numlock/brightness'
 alias fd='fdfind'
 alias ff='cl && fastfetch'
@@ -140,7 +140,45 @@ alias cfinit='printf -- "-std=c++98\n-Wall\n-Wextra\n-Werror\n-Ihdrs\n-Isrcs\n" 
 alias iginit='printf -- "*.o\n.objs\ncompile_flags.txt\n" >> .gitignore'
 alias check='~/scripts/check_repos.zsh'
 
-alias franci="$HOME/francinette/tester.sh"
+# --- EZA Wrapper Functions for Completion Fix (Revised) ---
+
+unfunction ls 2>/dev/null
+unalias ls 2>/dev/null
+function ls() {
+    # Call the actual eza binary with your desired flags
+    command eza --icons "$@"
+}
+# Map the 'ls' function to use the '_eza' completion logic
+compdef _eza ls
+
+unfunction ll 2>/dev/null
+unalias ll 2>/dev/null
+function ll() {
+    command eza -l --icons "$@"
+}
+compdef _eza ll
+
+unfunction l 2>/dev/null
+unalias l 2>/dev/null
+function l() {
+    ll "$@"
+}
+compdef _eza l
+
+unfunction lt 2>/dev/null
+unalias lt 2>/dev/null
+function lt() {
+	command eza --tree --icons "$@"    
+}
+compdef _eza lt
+
+unfunction la 2>/dev/null
+unalias la 2>/dev/null
+function la() {
+	command eza -la --icons "$@"    
+}
+compdef _eza la
+# ----------------------------------------------------
 
 export PATH=/home/jramiro/.local/funcheck/host:$PATH
 
