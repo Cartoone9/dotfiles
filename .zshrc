@@ -149,35 +149,35 @@ function ls() {
     command eza --icons "$@"
 }
 # Map the 'ls' function to use the '_eza' completion logic
-compdef _eza ls
+# compdef _eza ls
 
 unfunction ll 2>/dev/null
 unalias ll 2>/dev/null
 function ll() {
     command eza -l --icons "$@"
 }
-compdef _eza ll
+# compdef _eza ll
 
 unfunction l 2>/dev/null
 unalias l 2>/dev/null
 function l() {
     ll "$@"
 }
-compdef _eza l
+# compdef _eza l
 
 unfunction lt 2>/dev/null
 unalias lt 2>/dev/null
 function lt() {
 	command eza --tree --icons "$@"    
 }
-compdef _eza lt
+# compdef _eza lt
 
 unfunction la 2>/dev/null
 unalias la 2>/dev/null
 function la() {
 	command eza -la --icons "$@"    
 }
-compdef _eza la
+# compdef _eza la
 # ----------------------------------------------------
 
 export PATH=/home/jramiro/.local/funcheck/host:$PATH
