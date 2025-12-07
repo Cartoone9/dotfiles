@@ -134,7 +134,7 @@ alias format='c_formatter_42 ./**/*.{c,h} > /dev/null && echo "Formatting done."
 # alias lt='eza --tree --icons'
 # alias l='ll'
 alias numpad='echo 0 | sudo tee /sys/class/leds/input4::numlock/brightness'
-alias fd='fdfind'
+# alias fd='fdfind'
 alias ff='cl && fastfetch'
 alias cfinit='printf -- "-std=c++98\n-Wall\n-Wextra\n-Werror\n-Ihdrs\n-Isrcs\n" > compile_flags.txt'
 alias iginit='printf -- "*.o\n.objs\ncompile_flags.txt\n" >> .gitignore'
