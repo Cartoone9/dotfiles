@@ -118,7 +118,7 @@ alias gp='git push'
 alias gf='git fetch && git status'
 alias gpu='git pull'
 alias updt='brew update'
-alias update='sudo apt update && sudo apt upgrade -y'
+alias update='sudo dnf update -y && sudo dnf upgrade -y'
 alias vi='nvim'
 alias ccw='cc -Wall -Werror -Wextra'
 alias norm='norminette'
@@ -127,13 +127,13 @@ alias cl='printf "\n%.0s" {1..$LINES}'
 alias cls='cl && ls'
 alias cll='cl && ll'
 alias clt='cl && lt'
-alias format='c_formatter_42 ./**/*.{c,h} > /dev/null && echo "Formatting done."'
+# alias format='c_formatter_42 ./**/*.{c,h} > /dev/null && echo "Formatting done."'
 # alias ls='eza --icons'
 # alias ll='eza -l --icons'
 # alias la='eza -la --icons'
 # alias lt='eza --tree --icons'
 # alias l='ll'
-alias numpad='echo 0 | sudo tee /sys/class/leds/input4::numlock/brightness'
+# alias numpad='echo 0 | sudo tee /sys/class/leds/input4::numlock/brightness'
 # alias fd='fdfind'
 alias ff='cl && fastfetch'
 alias cfinit='printf -- "-std=c++98\n-Wall\n-Wextra\n-Werror\n-Ihdrs\n-Isrcs\n" > compile_flags.txt'
@@ -242,14 +242,14 @@ BASES=(. ~/42 ~/CTF ~/Documents ~/Downloads ~/Desktop)
 # fzf powered main directories search
 cdf() {
 	local dir
-
 	dir=$(fd "${BASES[@]}" \
 		--type d \
 		--hidden \
 		--no-ignore \
 		"${FD_EXCLUDES[@]}" \
 		| sed "s|^$HOME|~|" \
-		| fzf --preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
+		| fzf --bind 'esc:abort' \
+		--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
 		--preview-window=right:50%:wrap)
 
 	[ -n "$dir" ] && cd "${dir/#\~/$HOME}"
@@ -265,7 +265,8 @@ cdw() {
 		--no-ignore \
 		"${FD_EXCLUDES[@]}" \
 		| sed "s|^$HOME|~|" \
-		| fzf --preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
+		| fzf --bind 'esc:abort' \
+		--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
 		--preview-window=right:50%:wrap)
 
 	[ -n "$dir" ] && cd "${dir/#\~/$HOME}" && vi
@@ -281,7 +282,8 @@ cdfa() {
 		--no-ignore \
 		"${FD_EXCLUDES[@]}" \
 		| sed "s|^$HOME|~|" \
-		| fzf --preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
+		| fzf --bind 'esc:abort' \
+		--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
 		--preview-window=right:50%:wrap)
 
 	# Convert back to full path for cd
@@ -290,14 +292,14 @@ cdfa() {
 
 # fzf powered history search
 fh() {
-	eval "$(fc -l 1 | fzf --tac --no-sort +s --preview 'echo {}' | sed 's/^[0-9]\+\s*//')"
+	eval "$(fc -l 1 | fzf--bind 'esc:abort' --tac --no-sort +s --preview 'echo {}' | sed 's/^[0-9]\+\s*//')"
 }
 
 # fzf powered process killer
 fkill() {
 	local pids
 	# Show PID, USER, COMMAND; multi-select
-	pids=$(ps -eo pid,user,comm --sort=pid | awk '{printf "%-8s %-15s %s\n",$1,$2,$3}' | fzf --header="Select process(es) to kill" --multi | awk '{print $1}')
+	pids=$(ps -eo pid,user,comm --sort=pid | awk '{printf "%-8s %-15s %s\n",$1,$2,$3}' | fzf --bind 'esc:abort' --header="Select process(es) to kill" --multi | awk '{print $1}')
 
 	if [[ -n "$pids" ]]; then
 		# Use xargs to split lines properly
