@@ -1,9 +1,9 @@
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-	source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+# if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+# 	source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+# fi
 
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
@@ -69,7 +69,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # see 'man strftime' for details.
 # HIST_STAMPS="mm/dd/yyyy"
 
-# Would you like to use another custom folder than $ZSH/custom?
+# Would you like to use another custom folder than $ZSH_CUSTOM?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
 # Which plugins would you like to load?
@@ -128,15 +128,10 @@ alias cl='printf "\n%.0s" {1..$LINES}'
 alias cls='cl && ls'
 alias cll='cl && ll'
 alias clt='cl && lt'
+alias ff='cl && fastfetch'
 # alias format='c_formatter_42 ./**/*.{c,h} > /dev/null && echo "Formatting done."'
-# alias ls='eza --icons'
-# alias ll='eza -l --icons'
-# alias la='eza -la --icons'
-# alias lt='eza --tree --icons'
-# alias l='ll'
 # alias numpad='echo 0 | sudo tee /sys/class/leds/input4::numlock/brightness'
 # alias fd='fdfind'
-alias ff='cl && fastfetch'
 alias cfinit='printf -- "-std=c++98\n-Wall\n-Wextra\n-Werror\n-Ihdrs\n-Isrcs\n" > compile_flags.txt'
 alias iginit='printf -- "*.o\n.objs\ncompile_flags.txt\n" >> .gitignore'
 alias check='~/scripts/check_repos.zsh'
@@ -149,7 +144,6 @@ function ls() {
     # Call the actual eza binary with your desired flags
     command eza --icons "$@"
 }
-# Map the 'ls' function to use the '_eza' completion logic
 # compdef _eza ls
 
 unfunction ll 2>/dev/null
@@ -169,14 +163,14 @@ function l() {
 unfunction lt 2>/dev/null
 unalias lt 2>/dev/null
 function lt() {
-	command eza --tree --icons "$@"    
+	command eza --tree --icons "$@"
 }
 # compdef _eza lt
 
 unfunction la 2>/dev/null
 unalias la 2>/dev/null
 function la() {
-	command eza -la --icons "$@"    
+	command eza -la --icons "$@"
 }
 # compdef _eza la
 # ----------------------------------------------------
@@ -207,8 +201,6 @@ fi
 #     command nvim "$@"
 # }
 
-printf '\n%.0s' {1..$LINES}
-
 # NVM ===================================================================================================
 # export NVM_DIR="$HOME/.nvm"
 # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -223,7 +215,7 @@ zsh_nvm_lazy_load() {
 
   # Load NVM
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  
+
   # Load NVM bash completion (optional, slightly slower)
   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 }
@@ -293,7 +285,7 @@ cdfa() {
 
 # fzf powered history search
 fh() {
-	eval "$(fc -l 1 | fzf--bind 'esc:abort' --tac --no-sort +s --preview 'echo {}' | sed 's/^[0-9]\+\s*//')"
+	eval "$(fc -l 1 | fzf --bind 'esc:abort' --tac --no-sort +s --preview 'echo {}' | sed 's/^[0-9]\+\s*//')"
 }
 
 # fzf powered process killer
