@@ -222,14 +222,37 @@ eval "$(atuin init zsh)"
 # ======================================================================================
 # Keybinds
 # ======================================================================================
-# --- restore normal Up/Down history keys everywhere ---
-for km in emacs viins vicmd; do
-	# Up
-	bindkey -M $km '^[[A' up-line-or-history
-	bindkey -M $km '^[OA' up-line-or-history
+# Up/Down: search history by what's typed; when you reach the newest match,
+# one extra Down clears to an empty prompt.
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
 
-  # Down
-  bindkey -M $km '^[[B' down-line-or-history
-  bindkey -M $km '^[OB' down-line-or-history
+typeset -g __HS_ACTIVE=0
+
+_hs_up() {
+	zle up-line-or-beginning-search
+	(( $? == 0 )) && __HS_ACTIVE=1
+}
+
+_hs_down() {
+	if (( __HS_ACTIVE )); then
+		zle down-line-or-beginning-search
+		if (( $? != 0 )); then
+			__HS_ACTIVE=0
+			BUFFER=""
+			CURSOR=0
+		fi
+	else
+		# normal behavior when not in a search-navigation session
+		zle down-line-or-history
+	fi
+}
+
+zle -N _hs_up
+zle -N _hs_down
+
+for km in emacs viins vicmd; do
+	bindkey -M $km '^[[A' _hs_up
+	bindkey -M $km '^[OA'  _hs_up
+	bindkey -M $km '^[[B' _hs_down
+	bindkey -M $km '^[OB'  _hs_down
 done
-# ------------------------------------------------------
