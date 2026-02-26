@@ -136,7 +136,10 @@ pnpm() { zsh_nvm_lazy_load; pnpm "$@"; }
 # ======================================================================================
 FD_EXCLUDES=(--exclude '.cache' --exclude '.mozilla' --exclude 'node_modules' --exclude '.git' --exclude '.cargo' --exclude '.var' --exclude '.local')
 # All non-hidden directories directly under $HOME
-BASES=( $HOME/*(/N:^Music:^Pictures:^Videos) )
+BASES=(
+  $HOME/*(/N:^Music:^Pictures:^Videos)
+  $HOME/.config(/N)
+)
 
 cdf() {
 	local dir
