@@ -92,9 +92,9 @@ source $ZSH/oh-my-zsh.sh
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='vim'
+	export EDITOR='vim'
 else
-  export EDITOR='nvim'
+	export EDITOR='nvim'
 fi
 
 # Compilation flags
@@ -145,22 +145,22 @@ alias diff='kitten diff'
 unfunction ls 2>/dev/null
 unalias ls 2>/dev/null
 function ls() {
-    # Call the actual eza binary with your desired flags
-    command eza --icons "$@"
+	# Call the actual eza binary with your desired flags
+	command eza --icons "$@"
 }
 # compdef _eza ls
 
 unfunction ll 2>/dev/null
 unalias ll 2>/dev/null
 function ll() {
-    command eza -l --icons "$@"
+	command eza -l --icons "$@"
 }
 # compdef _eza ll
 
 unfunction l 2>/dev/null
 unalias l 2>/dev/null
 function l() {
-    ll "$@"
+	ll "$@"
 }
 # compdef _eza l
 
@@ -179,7 +179,7 @@ function la() {
 # compdef _eza la
 # ----------------------------------------------------
 
-export PATH=/home/jramiro/.local/funcheck/host:$PATH
+export PATH="$HOME/.local/funcheck/host:$PATH"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -214,14 +214,14 @@ export NVM_DIR="$HOME/.nvm"
 
 # Define the function that loads nvm only when needed
 zsh_nvm_lazy_load() {
-  # Cleanup the placeholder functions
-  unset -f nvm node npm npx yarn pnpm 2>/dev/null
+	# Cleanup the placeholder functions
+	unset -f nvm node npm npx yarn pnpm 2>/dev/null
 
-  # Load NVM
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+	# Load NVM
+	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-  # Load NVM bash completion (optional, slightly slower)
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+	# Load NVM bash completion (optional, slightly slower)
+	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 }
 
 # Create placeholder functions that trigger the loader
@@ -234,40 +234,39 @@ pnpm() { zsh_nvm_lazy_load; pnpm "$@"; }
 # NVM ===================================================================================================
 
 FD_EXCLUDES=(--exclude '.cache' --exclude '.mozilla' --exclude 'node_modules' --exclude '.git' --exclude '.cargo' --exclude '.var' --exclude '.local')
-BASES=(. ~/42 ~/CTF ~/Documents ~/Downloads ~/Desktop)
+# All non-hidden directories directly under $HOME
+BASES=( $HOME/*(/N:^Music:^Pictures:^Videos) )
 
-# fzf powered main directories search
 cdf() {
 	local dir
-	dir=$(fd "${BASES[@]}" \
-		--type d \
-		--hidden \
-		--no-ignore \
-		"${FD_EXCLUDES[@]}" \
-		| sed "s|^$HOME|~|" \
-		| fzf --bind 'esc:abort' \
-		--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
-		--preview-window=right:50%:wrap)
+	dir=$(
+		{
+			# 1) include the base directories themselves
+			print -rl -- "${BASES[@]}"
 
-	[ -n "$dir" ] && cd "${dir/#\~/$HOME}"
-}
+			# 2) include their subdirectories
+			fd --type d --hidden --no-ignore "${FD_EXCLUDES[@]}" . "${BASES[@]}"
+		} \
+			| sed "s|^$HOME|~|" \
+			| sort -u \
+			| fzf --bind 'esc:abort' \
+			--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
+			--preview-window=right:50%:wrap
+		)
+		[[ -n "$dir" ]] && cd "${dir/#\~/$HOME}"
+	}
 
-# fzf powered main directories search and vi
 cdw() {
 	local dir
-
-	dir=$(fd "${BASES[@]}" \
-		--type d \
-		--hidden \
-		--no-ignore \
-		"${FD_EXCLUDES[@]}" \
-		| sed "s|^$HOME|~|" \
-		| fzf --bind 'esc:abort' \
-		--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
-		--preview-window=right:50%:wrap)
-
-	[ -n "$dir" ] && cd "${dir/#\~/$HOME}" && vi
-}
+	dir=$(
+		fd --type d --hidden --no-ignore "${FD_EXCLUDES[@]}" . "${BASES[@]}" \
+			| sed "s|^$HOME|~|" \
+			| fzf --bind 'esc:abort' \
+			--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
+			--preview-window=right:50%:wrap
+		)
+		[[ -n "$dir" ]] && cd "${dir/#\~/$HOME}" && vi
+	}
 
 # fzf powered all directories search
 cdfa() {
@@ -283,9 +282,9 @@ cdfa() {
 		--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
 		--preview-window=right:50%:wrap)
 
-	# Convert back to full path for cd
-	[ -n "$dir" ] && cd "${dir/#\~/$HOME}"
-}
+		# Convert back to full path for cd
+		[ -n "$dir" ] && cd "${dir/#\~/$HOME}"
+	}
 
 # fzf powered history search
 fh() {
@@ -307,6 +306,9 @@ fkill() {
 	fi
 }
 
+# Let topgrade handle updates; don't have OMZ prompt/check
+zstyle ':omz:update' mode disabled
+
 # fzf colors
 export FZF_DEFAULT_OPTS="--color=fg:#f8f8f2,hl:#f92672,fg+:#f8f8f2,hl+:#fd971f,pointer:#66d9ef,marker:#a6e22e,info:#ae81ff,prompt:#f8f8f2"
 
@@ -314,5 +316,20 @@ export FZF_DEFAULT_OPTS="--color=fg:#f8f8f2,hl:#f92672,fg+:#f8f8f2,hl+:#fd971f,p
 export EZA_COLORS="Makefile=38;5;197;1;4"
 
 # Go config
-export PATH=$PATH:/usr/local/go/bin
-export PATH=$PATH:$(go env GOPATH)/bin
+export PATH="/usr/local/go/bin:$PATH"
+export PATH="$HOME/go/bin:$PATH"   # good default without calling go
+
+# Atuin config
+eval "$(atuin init zsh)"
+
+# --- restore normal Up/Down history keys everywhere ---
+for km in emacs viins vicmd; do
+	# Up
+	bindkey -M $km '^[[A' up-line-or-history
+	bindkey -M $km '^[OA' up-line-or-history
+
+  # Down
+  bindkey -M $km '^[[B' down-line-or-history
+  bindkey -M $km '^[OB' down-line-or-history
+done
+# ------------------------------------------------------
