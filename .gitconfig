@@ -1,0 +1,15 @@
+[user]
+	email = contact@cartoone.dev
+	name = cartoone
+[init]
+	defaultBranch = main
+[diff]
+	tool = kitty
+	guitool = kitty.gui
+[difftool]
+	prompt = false
+	trustExitCode = true
+[difftool "kitty"]
+	cmd = kitten diff $LOCAL $REMOTE
+[difftool "kitty.gui"]
+	cmd = kitten diff $LOCAL $REMOTE

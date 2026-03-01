@@ -43,7 +43,7 @@ alias ga='git add . && git status'
 alias gc='git commit -m'
 alias gp='git push'
 alias gf='git fetch && git status'
-alias gd='git diff'
+alias gd="git difftool --no-symlinks --dir-diff"
 alias gpu='git pull'
 alias updt='brew update'
 alias update='sudo dnf update -y && sudo dnf upgrade -y'
@@ -258,4 +258,8 @@ for km in emacs viins vicmd; do
 	bindkey -M $km '^[OA'  _hs_up
 	bindkey -M $km '^[[B' _hs_down
 	bindkey -M $km '^[OB'  _hs_down
+	bindkey -M $km '^[[C' forward-char
+	bindkey -M $km '^[OC' forward-char
+	bindkey -M $km '^[[D' backward-char
+	bindkey -M $km '^[OD' backward-char
 done
