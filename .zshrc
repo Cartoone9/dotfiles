@@ -61,6 +61,7 @@ alias iginit='printf -- "*.o\n.objs\ncompile_flags.txt\n" >> .gitignore'
 alias check='~/scripts/check_repos.zsh'
 alias ssh='kitten ssh'
 alias diff='kitten diff'
+alias lg="lazygit"
 
 # ======================================================================================
 # eza wrapper functions (replace ls/ll/lt/etc)
