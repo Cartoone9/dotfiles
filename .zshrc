@@ -7,7 +7,7 @@ printf '\n%.0s' {1..$LINES}
 export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
 export PATH="$HOME/.local/funcheck/host:$PATH"
 export PATH="/usr/local/go/bin:$PATH"
-export PATH="$HOME/go/bin:$PATH"   # good default without calling go
+export PATH="$HOME/go/bin:$PATH"
 
 # ======================================================================================
 # Oh My Zsh
@@ -46,7 +46,7 @@ alias gf='git fetch && git status'
 alias gd="git difftool --no-symlinks --dir-diff"
 alias gpu='git pull'
 alias updt='brew update'
-alias update='sudo dnf update -y && sudo dnf upgrade -y'
+alias update='topgrade && echo && check'
 alias vi='nvim'
 alias ccw='cc -Wall -Werror -Wextra'
 alias norm='norminette'
