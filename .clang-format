@@ -1,7 +1,7 @@
-BasedOnStyle: LLVM
-BreakBeforeBraces: Allman
-IndentWidth: 4
-UseTab: ForIndentation
-TabWidth: 4
-BreakConstructorInitializers: BeforeComma
-ConstructorInitializerIndentWidth: 1
+# BasedOnStyle: LLVM
+# BreakBeforeBraces: Allman
+# IndentWidth: 4
+# UseTab: ForIndentation
+# TabWidth: 4
+# BreakConstructorInitializers: BeforeComma
+# ConstructorInitializerIndentWidth: 1
