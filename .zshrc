@@ -7,7 +7,7 @@ printf '\n%.0s' {1..$LINES}
 export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
 export PATH="$HOME/.local/funcheck/host:$PATH"
 export PATH="/usr/local/go/bin:$PATH"
-export PATH="$HOME/go/bin:$PATH"   # good default without calling go
+export PATH="$HOME/go/bin:$PATH"
 
 # ======================================================================================
 # Oh My Zsh
@@ -46,7 +46,7 @@ alias gf='git fetch && git status'
 alias gd="git difftool --no-symlinks --dir-diff"
 alias gpu='git pull'
 alias updt='brew update'
-alias update='sudo dnf update -y && sudo dnf upgrade -y'
+alias update='topgrade && echo && check'
 alias vi='nvim'
 alias ccw='cc -Wall -Werror -Wextra'
 alias norm='norminette'
@@ -226,39 +226,15 @@ eval "$(atuin init zsh)"
 # ======================================================================================
 # Keybinds
 # ======================================================================================
-# Up/Down: search history by what's typed; when you reach the newest match,
-# one extra Down clears to an empty prompt.
+# Up/Down: search history by what's typed.
 autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
-
-typeset -g __HS_ACTIVE=0
-
-_hs_up() {
-	zle up-line-or-beginning-search
-	(( $? == 0 )) && __HS_ACTIVE=1
-}
-
-_hs_down() {
-	if (( __HS_ACTIVE )); then
-		zle down-line-or-beginning-search
-		if (( $? != 0 )); then
-			__HS_ACTIVE=0
-			BUFFER=""
-			CURSOR=0
-		fi
-	else
-		# normal behavior when not in a search-navigation session
-		zle down-line-or-history
-	fi
-}
-
-zle -N _hs_up
-zle -N _hs_down
-
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
 for km in emacs viins vicmd; do
-	bindkey -M $km '^[[A' _hs_up
-	bindkey -M $km '^[OA'  _hs_up
-	bindkey -M $km '^[[B' _hs_down
-	bindkey -M $km '^[OB'  _hs_down
+	bindkey -M $km '^[[A' up-line-or-beginning-search
+	bindkey -M $km '^[OA'  up-line-or-beginning-search
+	bindkey -M $km '^[[B' down-line-or-beginning-search
+	bindkey -M $km '^[OB'  down-line-or-beginning-search
 	bindkey -M $km '^[[C' forward-char
 	bindkey -M $km '^[OC' forward-char
 	bindkey -M $km '^[[D' backward-char
