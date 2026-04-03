@@ -69,31 +69,27 @@ alias lg="lazygit"
 unfunction ls 2>/dev/null
 unalias ls 2>/dev/null
 function ls() {
-	command eza --icons "$@"
+	command eza --icons --group-directories-first "$@"
 }
-
 unfunction ll 2>/dev/null
 unalias ll 2>/dev/null
 function ll() {
-	command eza -l --icons "$@"
+	command eza -l --icons --group-directories-first "$@"
 }
-
 unfunction l 2>/dev/null
 unalias l 2>/dev/null
 function l() {
 	ll "$@"
 }
-
 unfunction lt 2>/dev/null
 unalias lt 2>/dev/null
 function lt() {
-	command eza --tree --icons "$@"
+	command eza --tree --icons --group-directories-first "$@"
 }
-
 unfunction la 2>/dev/null
 unalias la 2>/dev/null
 function la() {
-	command eza -la --icons "$@"
+	command eza -la --icons --group-directories-first "$@"
 }
 
 # ======================================================================================
