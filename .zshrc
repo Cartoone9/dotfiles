@@ -62,6 +62,9 @@ alias check='~/scripts/check_repos.zsh'
 alias ssh='kitten ssh'
 alias diff='kitten diff'
 alias lg="lazygit"
+alias vpnup='sudo wg-quick up proton'
+alias vpndown='sudo wg-quick down proton'
+alias vpnstatus='sudo wg show'
 
 # ======================================================================================
 # eza wrapper functions (replace ls/ll/lt/etc)
