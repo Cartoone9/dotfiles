@@ -132,22 +132,39 @@ yarn() { zsh_nvm_lazy_load; yarn "$@"; }
 pnpm() { zsh_nvm_lazy_load; pnpm "$@"; }
 
 # ======================================================================================
+# Zoxide
+# ======================================================================================
+[[ -f "$HOME/dotfiles/.zoxide.zsh" ]] && source "$HOME/dotfiles/.zoxide.zsh"
+
+# ======================================================================================
 # fd/fzf directory helpers
 # ======================================================================================
-FD_EXCLUDES=(--exclude '.cache' --exclude '.mozilla' --exclude 'node_modules' --exclude '.git' --exclude '.cargo' --exclude '.var' --exclude '.local')
+FD_EXCLUDES=(
+	--exclude '.cache'
+	--exclude '.mozilla'
+	--exclude 'node_modules'
+	--exclude '.git'
+	--exclude '.cargo'
+	--exclude '.var'
+	--exclude '.local'
+	--exclude '.npm'
+	--exclude '.pnpm-store'
+	--exclude 'pkg/mod'
+)
+
 # All non-hidden directories directly under $HOME
 setopt EXTENDED_GLOB
 
 if [[ "$(uname)" == "Darwin" ]]; then
-  BASES=(
-    $HOME/^(Music|Pictures|Videos|Movies|Library|Public|Applications|Creative Cloud Files)(N/)
-    $HOME/.config(N/)
-  )
+	BASES=(
+		$HOME/^(Music|Pictures|Videos|Movies|Library|Public|Applications|Creative Cloud Files)(N/)
+		$HOME/.config(N/)
+	)
 else
-  BASES=(
-    $HOME/^(Music|Pictures|Videos)(N/)
-    $HOME/.config(N/)
-  )
+	BASES=(
+		$HOME/^(Music|Pictures|Videos|go)(N/)
+		$HOME/.config(N/)
+	)
 fi
 
 cdf() {
@@ -166,8 +183,8 @@ cdf() {
 			--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
 			--preview-window=right:50%:wrap
 		)
-		[[ -n "$dir" ]] && cd "${dir/#\~/$HOME}"
-	}
+	[[ -n "$dir" ]] && cd "${dir/#\~/$HOME}"
+}
 
 cdw() {
 	local dir
@@ -178,8 +195,8 @@ cdw() {
 			--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
 			--preview-window=right:50%:wrap
 		)
-		[[ -n "$dir" ]] && cd "${dir/#\~/$HOME}" && vi
-	}
+	[[ -n "$dir" ]] && cd "${dir/#\~/$HOME}" && vi
+}
 
 # fzf powered all directories search
 cdfa() {
@@ -195,9 +212,164 @@ cdfa() {
 		--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
 		--preview-window=right:50%:wrap)
 
-		# Convert back to full path for cd
-		[ -n "$dir" ] && cd "${dir/#\~/$HOME}"
-	}
+	# Convert back to full path for cd
+	[ -n "$dir" ] && cd "${dir/#\~/$HOME}"
+}
+
+# zoxide-ranked directory picker
+cdd() {
+	local dir
+	local query="${*:-}"
+
+	dir=$(
+		zoxide query -l 2>/dev/null \
+			| sed "s|^$HOME|~|" \
+			| sort -u \
+			| fzf --bind 'esc:abort' \
+				--no-sort \
+				--query "$query" \
+				--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
+				--preview-window=right:50%:wrap
+	)
+
+	[[ -n "$dir" ]] && cd "${dir/#\~/$HOME}"
+}
+
+# ======================================================================================
+# fd/fzf directory helpers
+# ======================================================================================
+
+# Shared appearance for cdf/cdw/cdfa/cdd
+DIR_FZF_OPTS=(
+	--border=rounded
+	--height=100%
+	--layout=default
+	--info=inline
+	'--color=fg:#f8f8f2,hl:#f92672'
+	'--color=fg+:#f8f8f2,hl+:#fd971f'
+	'--color=border:#888888,prompt:#66d9ef,pointer:#66d9ef'
+	'--color=marker:#fd971f,spinner:#fd971f,info:#ae81ff'
+)
+
+# Directories/noisy trees ignored by cdf/cdw/cdfa
+FD_EXCLUDES=(
+	--exclude '.cache'
+	--exclude '.mozilla'
+	--exclude 'node_modules'
+	--exclude '.git'
+	--exclude '.cargo'
+	--exclude '.var'
+	--exclude '.local'
+	--exclude '.npm'
+	--exclude '.pnpm-store'
+	--exclude 'pkg/mod'
+)
+
+# Allow zsh glob exclusions like $HOME/^(Music|Pictures)(N/)
+setopt EXTENDED_GLOB
+
+# Main search roots for cdf/cdw.
+# cdfa ignores this and searches all of $HOME.
+if [[ "$(uname)" == "Darwin" ]]; then
+	BASES=(
+		$HOME/^(Music|Pictures|Videos|Movies|Library|Public|Applications|Creative Cloud Files)(N/)
+		$HOME/.config(N/)
+	)
+else
+	BASES=(
+		$HOME/^(Music|Pictures|Videos|go)(N/)
+		$HOME/.config(N/)
+	)
+fi
+
+# Candidates for normal directory search
+_cdf_candidates() {
+	{
+		print -rl -- "${BASES[@]}"
+		fd --type d --hidden --no-ignore "${FD_EXCLUDES[@]}" . "${BASES[@]}" 2>/dev/null
+	} | _cdf_clean_paths
+}
+
+# Search useful/project directories from BASES
+cdf() {
+	local dir
+	dir=$(
+		{
+			# 1) include the base directories themselves
+			print -rl -- "${BASES[@]}"
+
+			# 2) include their subdirectories
+			fd --type d --hidden --no-ignore "${FD_EXCLUDES[@]}" . "${BASES[@]}"
+		} \
+			| sed "s|^$HOME|~|" \
+			| sort -u \
+			| fzf "${DIR_FZF_OPTS[@]}" \
+				--border-label=cdf \
+				--bind 'esc:abort' \
+				--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
+				--preview-window=right:50%:wrap
+	)
+
+	[[ -n "$dir" ]] && cd "${dir/#\~/$HOME}"
+}
+
+# Search useful/project directories from BASES, then open nvim
+cdw() {
+	local dir
+	dir=$(
+		fd --type d --hidden --no-ignore "${FD_EXCLUDES[@]}" . "${BASES[@]}" \
+			| sed "s|^$HOME|~|" \
+			| fzf "${DIR_FZF_OPTS[@]}" \
+				--border-label=cdw \
+				--bind 'esc:abort' \
+				--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
+				--preview-window=right:50%:wrap
+	)
+
+	[[ -n "$dir" ]] && cd "${dir/#\~/$HOME}" && vi
+}
+
+# Zoxide-ranked directory picker, restricted to the same roots as cdf
+cdd() {
+	local dir
+	local query="${*:-}"
+
+	dir=$(
+		zoxide query -l 2>/dev/null \
+			| sed "s|^$HOME|~|" \
+			| sort -u \
+			| fzf "${DIR_FZF_OPTS[@]}" \
+				--border-label=cdd \
+				--no-sort \
+				--bind 'esc:abort' \
+				--query "$query" \
+				--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
+				--preview-window=right:50%:wrap
+	)
+
+	[[ -n "$dir" ]] && cd "${dir/#\~/$HOME}"
+}
+
+# Search all directories under $HOME, including hidden/ignored ones except FD_EXCLUDES
+cdfa() {
+	local dir
+
+	dir=$(
+		fd . ~ \
+			--type d \
+			--hidden \
+			--no-ignore \
+			"${FD_EXCLUDES[@]}" \
+			| sed "s|^$HOME|~|" \
+			| fzf "${DIR_FZF_OPTS[@]}" \
+				--border-label=cdfa \
+				--bind 'esc:abort' \
+				--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
+				--preview-window=right:50%:wrap
+	)
+
+	[[ -n "$dir" ]] && cd "${dir/#\~/$HOME}"
+}
 
 # ======================================================================================
 # fzf helpers
