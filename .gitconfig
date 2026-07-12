@@ -15,3 +15,5 @@
 	cmd = kitten diff $LOCAL $REMOTE
 [fetch]
 	prune = true
+[core]
+	excludesFile = /home/cartoone/.config/git/ignore
