@@ -420,3 +420,28 @@ for km in emacs viins vicmd; do
 	bindkey -M $km '^[[D' backward-char
 	bindkey -M $km '^[OD' backward-char
 done
+
+# ======================================================================================
+# Keep prompt anchored to the bottom of the terminal on resize
+# ======================================================================================
+# Scrolls the screen content down so the prompt (and the history above it) lands on
+# the last line, and moves the cursor with it so zle never needs a repaint.
+_anchor-prompt-bottom() {
+	# Don't touch the screen while editing a multi-line command
+	[[ $BUFFER == *$'\n'* ]] && return 0
+
+	# Ask the terminal for the cursor row (reply: ESC[row;colR)
+	local _esc row col
+	print -n '\e[6n' > /dev/tty
+	IFS='[;' read -rs -t 1 -d R _esc row col < /dev/tty || return 0
+	[[ $row == <-> ]] || return 0
+
+	local pad=$(( LINES - row ))
+	(( pad > 0 )) && printf '\e[%dT\e[%dB' $pad $pad > /dev/tty
+}
+zle -N _anchor-prompt-bottom
+
+# Fires on every terminal resize (window opened/closed/tiled in Hyprland)
+TRAPWINCH() {
+	zle && zle _anchor-prompt-bottom 2>/dev/null
+}
