@@ -437,12 +437,27 @@ for km in emacs viins vicmd; do
 done
 
 # ======================================================================================
-# Keep prompt anchored to the bottom of the terminal on resize
+# Keep prompt anchored to the bottom of the terminal
 # ======================================================================================
 # Scrolls the screen content down so the prompt (and the history above it) lands on
 # the last line, and moves the cursor with it so zle stays consistent.
+# Two triggers: terminal resize (TRAPWINCH) and before each prompt (precmd), the
+# latter for TUIs like claude/nvim that exit leaving the cursor high on the screen.
+zmodload zsh/zselect
 typeset -g _anchor_rows=$LINES
 typeset -g _anchor_busy=0
+
+# Query the cursor row (reply: ESC[row;colR) and scroll content+cursor down to
+# the last line.
+_anchor-scroll-to-bottom() {
+	[[ $TERM == dumb ]] && return 0
+	local _esc row col
+	print -n '\e[6n' > /dev/tty
+	IFS='[;' read -rs -t 1 -d R _esc row col < /dev/tty || return 0
+	[[ $row == <-> ]] || return 0
+	local pad=$(( LINES - row ))
+	(( pad > 0 )) && printf '\e[%dT\e[%dB' $pad $pad > /dev/tty
+}
 
 _anchor-prompt-bottom() {
 	local prev=$_anchor_rows
@@ -458,14 +473,7 @@ _anchor-prompt-bottom() {
 		[[ $BUFFER == *$'\n'* ]] && return 0
 		_anchor_busy=1
 
-		# Ask the terminal for the cursor row (reply: ESC[row;colR)
-		local _esc row col
-		print -n '\e[6n' > /dev/tty
-		IFS='[;' read -rs -t 1 -d R _esc row col < /dev/tty || return 0
-		[[ $row == <-> ]] || return 0
-
-		local pad=$(( LINES - row ))
-		(( pad > 0 )) && printf '\e[%dT\e[%dB' $pad $pad > /dev/tty
+		_anchor-scroll-to-bottom
 	} always {
 		_anchor_busy=0
 		# One clean repaint at the new size; also heals p10k rewrap artifacts
@@ -478,3 +486,13 @@ zle -N _anchor-prompt-bottom
 TRAPWINCH() {
 	zle && zle _anchor-prompt-bottom 2>/dev/null
 }
+
+# Re-anchor before drawing each prompt (no-op when the cursor is already on the
+# last line, i.e. after any normal full-width scroll of output).
+_anchor-precmd() {
+	# Skip if the user typed ahead: the cursor-report read would eat those keys
+	zselect -t 0 -r 0 && return 0
+	_anchor-scroll-to-bottom
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd _anchor-precmd
