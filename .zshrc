@@ -155,7 +155,15 @@ _cached_init() {
 # fd/fzf directory helpers
 # ======================================================================================
 
-# Shared appearance for cdf/cdw/cdfa/cdd
+# Shared appearance + matching for cdf/cdw/cdfa/cdd.
+# Default fuzzy matching: "tragat" matches ~/42/ft_transcendence/services/gateway.
+# Prefix a term with ' (e.g. 'tra) to require it as a literal substring instead.
+# Ranking in cdf/cdw/cdd: fzf match score first ("nvi" puts ~/.config/nvim above a
+# scattered-letter match in a frecent path), --tiebreak=index falls back to the
+# frecency-ranked input order when scores are equal. --scheme=history makes every
+# word-boundary bonus equal, so "trans" scores the same in ft_transcendence (after _)
+# as in transport (after /) and frecency decides — the default scheme rates a match
+# after / slightly higher and the tiebreak would never fire.
 DIR_FZF_OPTS=(
 	--border=rounded
 	--height=100%
@@ -171,6 +179,8 @@ DIR_FZF_OPTS=(
 FD_EXCLUDES=(
 	--exclude '.cache'
 	--exclude '.mozilla'
+	--exclude 'google-chrome*'
+	--exclude 'chromium'
 	--exclude 'node_modules'
 	--exclude '.git'
 	--exclude '.cargo'
@@ -206,17 +216,15 @@ _cdf_candidates() {
 	} | sed 's|/$||; /^$/d' | sort -u
 }
 
-# Reorder stdin paths by zoxide frecency: visited dirs first (most used on top),
-# never-visited ones after, keeping their alphabetical order
+# Reorder stdin paths: zoxide-visited dirs first (most used on top), then
+# never-visited ones ordered shallowest-first so likely destinations beat
+# deeply nested noise
 _cdf_frecency_rank() {
-	awk '
-		NR == FNR { rank[$0] = ++n; next }
-		{ if ($0 in rank) ranked[rank[$0]] = $0; else rest[++m] = $0 }
-		END {
-			for (i = 1; i <= n; i++) if (i in ranked) print ranked[i]
-			for (i = 1; i <= m; i++) print rest[i]
-		}
-	' <(zoxide query -l 2>/dev/null) -
+	awk -v zlist=<(zoxide query -l 2>/dev/null) '
+		BEGIN { while ((getline line < zlist) > 0) rank[line] = ++n }
+		$0 in rank { printf "0\t%08d\t%s\n", rank[$0], $0; next }
+		           { printf "1\t%08d\t%s\n", gsub("/", "/"), $0 }
+	' | sort -t$'\t' -k1,1 -k2,2 -k3,3 | cut -f3-
 }
 
 # Search useful/project directories from BASES, most-used first (zoxide frecency)
@@ -228,7 +236,8 @@ cdf() {
 			| sed "s|^$HOME|~|" \
 			| fzf "${DIR_FZF_OPTS[@]}" \
 				--border-label=cdf \
-				--no-sort \
+				--scheme=history \
+				--tiebreak=index \
 				--bind 'esc:abort' \
 				--query "${*:-}" \
 				--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
@@ -247,7 +256,8 @@ cdw() {
 			| sed "s|^$HOME|~|" \
 			| fzf "${DIR_FZF_OPTS[@]}" \
 				--border-label=cdw \
-				--no-sort \
+				--scheme=history \
+				--tiebreak=index \
 				--bind 'esc:abort' \
 				--query "${*:-}" \
 				--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
@@ -267,7 +277,8 @@ cdd() {
 			| sed "s|^$HOME|~|" \
 			| fzf "${DIR_FZF_OPTS[@]}" \
 				--border-label=cdd \
-				--no-sort \
+				--scheme=history \
+				--tiebreak=index \
 				--bind 'esc:abort' \
 				--query "$query" \
 				--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
