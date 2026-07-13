@@ -33,7 +33,7 @@
   typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
     # =========================[ Line #1 ]=========================
     # os_icon               # os identifier
-    dir                     # current directory
+    dir                     # current directory (swap for my_dir for per-depth Monokai colors)
     vcs                     # git status
     # =========================[ Line #2 ]=========================
     newline                 # \n
@@ -167,8 +167,8 @@
     typeset -g POWERLEVEL9K_EMPTY_LINE_RIGHT_PROMPT_FIRST_SEGMENT_START_SYMBOL='%{%}'
   fi
 
-  # Default background color.
-  typeset -g POWERLEVEL9K_BACKGROUND=238
+  # Default background color. Monokai selection grey, matches the Hyprland palette.
+  typeset -g POWERLEVEL9K_BACKGROUND='#49483E'
 
   # Separator between same-color segments on the left.
   typeset -g POWERLEVEL9K_LEFT_SUBSEGMENT_SEPARATOR='%244F\uE0B1'
@@ -202,9 +202,9 @@
   # Transparent background.
   typeset -g POWERLEVEL9K_PROMPT_CHAR_BACKGROUND=
   # Green prompt symbol if the last command succeeded.
-  typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_{VIINS,VICMD,VIVIS,VIOWR}_FOREGROUND=76
+  typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_{VIINS,VICMD,VIVIS,VIOWR}_FOREGROUND='#A6E22E'
   # Red prompt symbol if the last command failed.
-  typeset -g POWERLEVEL9K_PROMPT_CHAR_ERROR_{VIINS,VICMD,VIVIS,VIOWR}_FOREGROUND=196
+  typeset -g POWERLEVEL9K_PROMPT_CHAR_ERROR_{VIINS,VICMD,VIVIS,VIOWR}_FOREGROUND='#F92672'
   # Default prompt symbol.
   typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VIINS_CONTENT_EXPANSION='❯'
   # Prompt symbol in command vi mode.
@@ -222,18 +222,18 @@
   typeset -g POWERLEVEL9K_PROMPT_CHAR_LEFT_{LEFT,RIGHT}_WHITESPACE=
 
   ##################################[ dir: current directory ]##################################
-  # Default current directory color.
-  typeset -g POWERLEVEL9K_DIR_FOREGROUND=31
+  # Default current directory color (Monokai red).
+  typeset -g POWERLEVEL9K_DIR_FOREGROUND='#F92672'
   # If directory is too long, shorten some of its segments to the shortest possible unique
   # prefix. The shortened directory can be tab-completed to the original.
   typeset -g POWERLEVEL9K_SHORTEN_STRATEGY=truncate_to_unique
   # Replace removed segment suffixes with this symbol.
   typeset -g POWERLEVEL9K_SHORTEN_DELIMITER=
   # Color of the shortened directory segments.
-  typeset -g POWERLEVEL9K_DIR_SHORTENED_FOREGROUND=103
+  typeset -g POWERLEVEL9K_DIR_SHORTENED_FOREGROUND=246
   # Color of the anchor directory segments. Anchor segments are never shortened. The first
   # segment is always an anchor.
-  typeset -g POWERLEVEL9K_DIR_ANCHOR_FOREGROUND=39
+  typeset -g POWERLEVEL9K_DIR_ANCHOR_FOREGROUND='#F92672'
   # Display anchor directory segments in bold.
   typeset -g POWERLEVEL9K_DIR_ANCHOR_BOLD=true
   # Don't shorten directories that contain any of these files. They are anchors.
@@ -355,6 +355,86 @@
   # Custom prefix.
   # typeset -g POWERLEVEL9K_DIR_PREFIX='%246Fin '
 
+  ###################[ my_dir: current directory with per-depth Monokai colors ]################
+  # Optional replacement for the built-in dir segment, currently NOT enabled — swap `dir` for
+  # `my_dir` in LEFT_PROMPT_ELEMENTS to use it. Colors each path component by depth, cycling
+  # through Monokai red / purple / blue / green / yellow / orange, with grey slashes and a bold
+  # final component.
+  #
+  # Why not the built-in dir segment: with truncate_to_unique p10k re-renders the path from an
+  # internal template at display time (internal/p10k.zsh, the %{d%} marker substitution), so
+  # POWERLEVEL9K_DIR_CONTENT_EXPANSION output is used only for width measurement and any custom
+  # per-component colors are discarded.
+  #
+  # When the path exceeds half the terminal width (capped at 80 columns, mirroring the old
+  # DIR_MAX_LENGTH=80), middle components are shortened to their shortest prefix that is unique
+  # among sibling directories, like truncate_to_unique. The first and last components and any
+  # component containing a marker from POWERLEVEL9K_SHORTEN_FOLDER_MARKER (.git, Cargo.toml,
+  # go.mod, ...) are never shortened.
+  typeset -ga my_dir_depth_palette=('#F92672' '#AE81FF' '#66D9EF' '#A6E22E' '#E6DB74' '#FD971F')
+  function prompt_my_dir() {
+    emulate -L zsh -o extended_glob
+    local cwd=${(%):-%~}
+    local -a parts=("${(@s:/:)cwd}")
+
+    # Real filesystem prefix matching parts[1], for sibling lookups while shortening.
+    # Unknown for zsh named directories (~foo); those paths just skip shortening.
+    local base= shortenable=0
+    if [[ $cwd == '~'(|/*) ]]; then
+      base=$HOME shortenable=1
+    elif [[ $cwd == /* ]]; then
+      base= shortenable=1
+    fi
+
+    local -i budget=$(( ${COLUMNS:-80} / 2 ))
+    (( budget > 80 )) && budget=80
+    if (( shortenable && $#cwd > budget )); then
+      local parent=$base name
+      local -i i len
+      for (( i = 2; i <= $#parts; ++i )); do
+        name=$parts[i]
+        if (( i < $#parts )) && [[ -n $name ]]; then
+          local -a markers=($parent/$name/${~POWERLEVEL9K_SHORTEN_FOLDER_MARKER}(NY1))
+          if (( ! $#markers )); then
+            for (( len = 1; len < $#name; ++len )); do
+              local -a twins=("$parent"/"${name[1,len]}"*(NDY2/))
+              (( $#twins <= 1 )) && break
+            done
+            parts[i]=${name[1,len]}
+          fi
+        fi
+        parent+=/$name
+      done
+    fi
+
+    local text= sep='%F{246}/' seg
+    local -i n=$#my_dir_depth_palette off=0 j
+    if [[ $parts[1] == '' ]]; then
+      # Absolute path: the root slash itself is depth 1.
+      text+="%F{$my_dir_depth_palette[1]}/"
+      off=1
+      parts[1]=()
+      [[ $#parts == 1 && $parts[1] == '' ]] && parts=()
+    fi
+    for (( j = 1; j <= $#parts; ++j )); do
+      # The segment is rendered with prompt expansion (-e below); neutralize everything a
+      # directory name could inject: \ $ ` for prompt_subst, % for prompt escapes.
+      seg=${parts[j]//\\/\\\\}
+      seg=${seg//\$/\\\$}
+      seg=${seg//\`/\\\`}
+      seg=${seg//\%/%%}
+      (( j > 1 )) && text+=$sep
+      if (( j == $#parts )); then
+        text+="%F{${my_dir_depth_palette[(off + j - 1) % n + 1]}}%B${seg}%b"
+      else
+        text+="%F{${my_dir_depth_palette[(off + j - 1) % n + 1]}}${seg}"
+      fi
+    done
+    [[ -w ${PWD:-/} ]] || text+=" %F{250}"$''
+
+    p10k segment -e -b '#49483E' -f '#F92672' -i $'' -t $text
+  }
+
   #####################################[ vcs: git status ]######################################
   # Branch icon. Set this parameter to '\UE0A0 ' for the popular Powerline branch icon.
   typeset -g POWERLEVEL9K_VCS_BRANCH_ICON='\uF126 '
@@ -383,11 +463,11 @@
 
     if (( $1 )); then
       # Styling for up-to-date Git status.
-      local       meta='%246F'  # grey foreground
-      local      clean='%76F'   # green foreground
-      local   modified='%178F'  # yellow foreground
-      local  untracked='%39F'   # blue foreground
-      local conflicted='%196F'  # red foreground
+      local       meta='%246F'          # grey foreground
+      local      clean='%F{#A6E22E}'    # monokai green foreground
+      local   modified='%F{#E6DB74}'    # monokai yellow foreground
+      local  untracked='%F{#66D9EF}'    # monokai cyan foreground
+      local conflicted='%F{#F92672}'    # monokai red foreground
     else
       # Styling for incomplete and stale Git status.
       local       meta='%244F'  # grey foreground
@@ -500,7 +580,7 @@
   typeset -g POWERLEVEL9K_VCS_{STAGED,UNSTAGED,UNTRACKED,CONFLICTED,COMMITS_AHEAD,COMMITS_BEHIND}_MAX_NUM=-1
 
   # Icon color.
-  typeset -g POWERLEVEL9K_VCS_VISUAL_IDENTIFIER_COLOR=76
+  typeset -g POWERLEVEL9K_VCS_VISUAL_IDENTIFIER_COLOR='#A6E22E'
   typeset -g POWERLEVEL9K_VCS_LOADING_VISUAL_IDENTIFIER_COLOR=244
   # Custom icon.
   # typeset -g POWERLEVEL9K_VCS_VISUAL_IDENTIFIER_EXPANSION='⭐'
@@ -514,9 +594,9 @@
 
   # These settings are used for repositories other than Git or when gitstatusd fails and
   # Powerlevel10k has to fall back to using vcs_info.
-  typeset -g POWERLEVEL9K_VCS_CLEAN_FOREGROUND=76
-  typeset -g POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND=76
-  typeset -g POWERLEVEL9K_VCS_MODIFIED_FOREGROUND=178
+  typeset -g POWERLEVEL9K_VCS_CLEAN_FOREGROUND='#A6E22E'
+  typeset -g POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND='#66D9EF'
+  typeset -g POWERLEVEL9K_VCS_MODIFIED_FOREGROUND='#E6DB74'
 
   ##########################[ status: exit code of the last command ]###########################
   # Enable OK_PIPE, ERROR_PIPE and ERROR_SIGNAL status states to allow us to enable, disable and
@@ -526,24 +606,24 @@
   # Status on success. No content, just an icon. No need to show it if prompt_char is enabled as
   # it will signify success by turning green.
   typeset -g POWERLEVEL9K_STATUS_OK=true
-  typeset -g POWERLEVEL9K_STATUS_OK_FOREGROUND=70
+  typeset -g POWERLEVEL9K_STATUS_OK_FOREGROUND='#A6E22E'
   typeset -g POWERLEVEL9K_STATUS_OK_VISUAL_IDENTIFIER_EXPANSION='✓'
 
   # Status when some part of a pipe command fails but the overall exit status is zero. It may look
   # like this: 1|0.
   typeset -g POWERLEVEL9K_STATUS_OK_PIPE=true
-  typeset -g POWERLEVEL9K_STATUS_OK_PIPE_FOREGROUND=70
+  typeset -g POWERLEVEL9K_STATUS_OK_PIPE_FOREGROUND='#A6E22E'
   typeset -g POWERLEVEL9K_STATUS_OK_PIPE_VISUAL_IDENTIFIER_EXPANSION='✓'
 
   # Status when it's just an error code (e.g., '1'). No need to show it if prompt_char is enabled as
   # it will signify error by turning red.
   typeset -g POWERLEVEL9K_STATUS_ERROR=true
-  typeset -g POWERLEVEL9K_STATUS_ERROR_FOREGROUND=160
+  typeset -g POWERLEVEL9K_STATUS_ERROR_FOREGROUND='#F92672'
   typeset -g POWERLEVEL9K_STATUS_ERROR_VISUAL_IDENTIFIER_EXPANSION='✕'
 
   # Status when the last command was terminated by a signal.
   typeset -g POWERLEVEL9K_STATUS_ERROR_SIGNAL=true
-  typeset -g POWERLEVEL9K_STATUS_ERROR_SIGNAL_FOREGROUND=160
+  typeset -g POWERLEVEL9K_STATUS_ERROR_SIGNAL_FOREGROUND='#F92672'
   # Use terse signal names: "INT" instead of "SIGINT(2)".
   typeset -g POWERLEVEL9K_STATUS_VERBOSE_SIGNAME=false
   typeset -g POWERLEVEL9K_STATUS_ERROR_SIGNAL_VISUAL_IDENTIFIER_EXPANSION='✕'
@@ -551,7 +631,7 @@
   # Status when some part of a pipe command fails and the overall exit status is also non-zero.
   # It may look like this: 1|0.
   typeset -g POWERLEVEL9K_STATUS_ERROR_PIPE=true
-  typeset -g POWERLEVEL9K_STATUS_ERROR_PIPE_FOREGROUND=160
+  typeset -g POWERLEVEL9K_STATUS_ERROR_PIPE_FOREGROUND='#F92672'
   typeset -g POWERLEVEL9K_STATUS_ERROR_PIPE_VISUAL_IDENTIFIER_EXPANSION='✕'
 
   ###################[ command_execution_time: duration of the last command ]###################
@@ -572,7 +652,7 @@
   # Don't show the number of background jobs.
   typeset -g POWERLEVEL9K_BACKGROUND_JOBS_VERBOSE=false
   # Background jobs color.
-  typeset -g POWERLEVEL9K_BACKGROUND_JOBS_FOREGROUND=37
+  typeset -g POWERLEVEL9K_BACKGROUND_JOBS_FOREGROUND=246
   # Custom icon.
   # typeset -g POWERLEVEL9K_BACKGROUND_JOBS_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
@@ -823,7 +903,7 @@
 
   ######################################[ ram: free RAM ]#######################################
   # RAM color.
-  typeset -g POWERLEVEL9K_RAM_FOREGROUND=66
+  typeset -g POWERLEVEL9K_RAM_FOREGROUND=246
   # Custom icon.
   typeset -g POWERLEVEL9K_RAM_VISUAL_IDENTIFIER_EXPANSION=''
 
@@ -837,17 +917,17 @@
   # Show average CPU load over this many last minutes. Valid values are 1, 5 and 15.
   typeset -g POWERLEVEL9K_LOAD_WHICH=5
   # Load color when load is under 50%.
-  typeset -g POWERLEVEL9K_LOAD_NORMAL_FOREGROUND=66
+  typeset -g POWERLEVEL9K_LOAD_NORMAL_FOREGROUND=246
   # Load color when load is between 50% and 70%.
-  typeset -g POWERLEVEL9K_LOAD_WARNING_FOREGROUND=178
+  typeset -g POWERLEVEL9K_LOAD_WARNING_FOREGROUND='#E6DB74'
   # Load color when load is over 70%.
-  typeset -g POWERLEVEL9K_LOAD_CRITICAL_FOREGROUND=166
+  typeset -g POWERLEVEL9K_LOAD_CRITICAL_FOREGROUND='#F92672'
   # Custom icon.
   typeset -g POWERLEVEL9K_LOAD_VISUAL_IDENTIFIER_EXPANSION='󰔶'
 
   ################[ todo: todo items (https://github.com/todotxt/todo.txt-cli) ]################
   # Todo color.
-  typeset -g POWERLEVEL9K_TODO_FOREGROUND=110
+  typeset -g POWERLEVEL9K_TODO_FOREGROUND=250
   # Hide todo when the total number of tasks is zero.
   typeset -g POWERLEVEL9K_TODO_HIDE_ZERO_TOTAL=true
   # Hide todo when the number of tasks after filtering is zero.
@@ -871,7 +951,7 @@
 
   ###########[ timewarrior: timewarrior tracking status (https://timewarrior.net/) ]############
   # Timewarrior color.
-  typeset -g POWERLEVEL9K_TIMEWARRIOR_FOREGROUND=110
+  typeset -g POWERLEVEL9K_TIMEWARRIOR_FOREGROUND=250
   # If the tracked task is longer than 24 characters, truncate and append "…".
   # Tip: To always display tasks without truncation, delete the following parameter.
   # Tip: To hide task names and display just the icon when time tracking is enabled, set the
@@ -883,7 +963,7 @@
 
   ##############[ taskwarrior: taskwarrior task count (https://taskwarrior.org/) ]##############
   # Taskwarrior color.
-  typeset -g POWERLEVEL9K_TASKWARRIOR_FOREGROUND=74
+  typeset -g POWERLEVEL9K_TASKWARRIOR_FOREGROUND=250
 
   # Taskwarrior segment format. The following parameters are available within the expansion.
   #
@@ -904,8 +984,8 @@
 
   ######[ per_directory_history: Oh My Zsh per-directory-history local/global indicator ]#######
   # Color when using local/global history.
-  typeset -g POWERLEVEL9K_PER_DIRECTORY_HISTORY_LOCAL_FOREGROUND=135
-  typeset -g POWERLEVEL9K_PER_DIRECTORY_HISTORY_GLOBAL_FOREGROUND=130
+  typeset -g POWERLEVEL9K_PER_DIRECTORY_HISTORY_LOCAL_FOREGROUND='#AE81FF'
+  typeset -g POWERLEVEL9K_PER_DIRECTORY_HISTORY_GLOBAL_FOREGROUND=246
 
   # Tip: Uncomment the next two lines to hide "local"/"global" text and leave just the icon.
   # typeset -g POWERLEVEL9K_PER_DIRECTORY_HISTORY_LOCAL_CONTENT_EXPANSION=''
