@@ -154,105 +154,6 @@ _cached_init() {
 # ======================================================================================
 # fd/fzf directory helpers
 # ======================================================================================
-FD_EXCLUDES=(
-	--exclude '.cache'
-	--exclude '.mozilla'
-	--exclude 'node_modules'
-	--exclude '.git'
-	--exclude '.cargo'
-	--exclude '.var'
-	--exclude '.local'
-	--exclude '.npm'
-	--exclude '.pnpm-store'
-	--exclude 'pkg/mod'
-)
-
-# All non-hidden directories directly under $HOME
-setopt EXTENDED_GLOB
-
-if [[ "$(uname)" == "Darwin" ]]; then
-	BASES=(
-		$HOME/^(Music|Pictures|Videos|Movies|Library|Public|Applications|Creative Cloud Files)(N/)
-		$HOME/.config(N/)
-	)
-else
-	BASES=(
-		$HOME/^(Music|Pictures|Videos|go)(N/)
-		$HOME/.config(N/)
-	)
-fi
-
-cdf() {
-	local dir
-	dir=$(
-		{
-			# 1) include the base directories themselves
-			print -rl -- "${BASES[@]}"
-
-			# 2) include their subdirectories
-			fd --type d --hidden --no-ignore "${FD_EXCLUDES[@]}" . "${BASES[@]}"
-		} \
-			| sed "s|^$HOME|~|" \
-			| sort -u \
-			| fzf --bind 'esc:abort' \
-			--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
-			--preview-window=right:50%:wrap
-		)
-	[[ -n "$dir" ]] && cd "${dir/#\~/$HOME}"
-}
-
-cdw() {
-	local dir
-	dir=$(
-		fd --type d --hidden --no-ignore "${FD_EXCLUDES[@]}" . "${BASES[@]}" \
-			| sed "s|^$HOME|~|" \
-			| fzf --bind 'esc:abort' \
-			--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
-			--preview-window=right:50%:wrap
-		)
-	[[ -n "$dir" ]] && cd "${dir/#\~/$HOME}" && vi
-}
-
-# fzf powered all directories search
-cdfa() {
-	local dir
-
-	dir=$(fd . ~ \
-		--type d \
-		--hidden \
-		--no-ignore \
-		"${FD_EXCLUDES[@]}" \
-		| sed "s|^$HOME|~|" \
-		| fzf --bind 'esc:abort' \
-		--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
-		--preview-window=right:50%:wrap)
-
-	# Convert back to full path for cd
-	[ -n "$dir" ] && cd "${dir/#\~/$HOME}"
-}
-
-# zoxide-ranked directory picker
-cdd() {
-	local dir
-	local query="${*:-}"
-
-	dir=$(
-		zoxide query -l 2>/dev/null \
-			| sed "s|^$HOME|~|" \
-			| sort -u \
-			| fzf --bind 'esc:abort' \
-				--no-sort \
-				--query "$query" \
-				--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
-				--preview-window=right:50%:wrap
-	)
-
-	[[ -n "$dir" ]] && cd "${dir/#\~/$HOME}"
-}
-
-# ======================================================================================
-# fd/fzf directory helpers
-# ======================================================================================
 
 # Shared appearance for cdf/cdw/cdfa/cdd
 DIR_FZF_OPTS=(
@@ -297,30 +198,39 @@ else
 	)
 fi
 
-# Candidates for normal directory search
+# Candidates for normal directory search: the bases themselves + their subdirectories
 _cdf_candidates() {
 	{
 		print -rl -- "${BASES[@]}"
 		fd --type d --hidden --no-ignore "${FD_EXCLUDES[@]}" . "${BASES[@]}" 2>/dev/null
-	} | _cdf_clean_paths
+	} | sed 's|/$||; /^$/d' | sort -u
 }
 
-# Search useful/project directories from BASES
+# Reorder stdin paths by zoxide frecency: visited dirs first (most used on top),
+# never-visited ones after, keeping their alphabetical order
+_cdf_frecency_rank() {
+	awk '
+		NR == FNR { rank[$0] = ++n; next }
+		{ if ($0 in rank) ranked[rank[$0]] = $0; else rest[++m] = $0 }
+		END {
+			for (i = 1; i <= n; i++) if (i in ranked) print ranked[i]
+			for (i = 1; i <= m; i++) print rest[i]
+		}
+	' <(zoxide query -l 2>/dev/null) -
+}
+
+# Search useful/project directories from BASES, most-used first (zoxide frecency)
 cdf() {
 	local dir
 	dir=$(
-		{
-			# 1) include the base directories themselves
-			print -rl -- "${BASES[@]}"
-
-			# 2) include their subdirectories
-			fd --type d --hidden --no-ignore "${FD_EXCLUDES[@]}" . "${BASES[@]}"
-		} \
+		_cdf_candidates \
+			| _cdf_frecency_rank \
 			| sed "s|^$HOME|~|" \
-			| sort -u \
 			| fzf "${DIR_FZF_OPTS[@]}" \
 				--border-label=cdf \
+				--no-sort \
 				--bind 'esc:abort' \
+				--query "${*:-}" \
 				--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
 				--preview-window=right:50%:wrap
 	)
@@ -332,11 +242,14 @@ cdf() {
 cdw() {
 	local dir
 	dir=$(
-		fd --type d --hidden --no-ignore "${FD_EXCLUDES[@]}" . "${BASES[@]}" \
+		_cdf_candidates \
+			| _cdf_frecency_rank \
 			| sed "s|^$HOME|~|" \
 			| fzf "${DIR_FZF_OPTS[@]}" \
 				--border-label=cdw \
+				--no-sort \
 				--bind 'esc:abort' \
+				--query "${*:-}" \
 				--preview 'eza --icons --group-directories-first --color=always --tree --level=2 "$(echo {} | sed "s|^~|$HOME|")"' \
 				--preview-window=right:50%:wrap
 	)
@@ -352,7 +265,6 @@ cdd() {
 	dir=$(
 		zoxide query -l 2>/dev/null \
 			| sed "s|^$HOME|~|" \
-			| sort -u \
 			| fzf "${DIR_FZF_OPTS[@]}" \
 				--border-label=cdd \
 				--no-sort \
