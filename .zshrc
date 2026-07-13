@@ -132,6 +132,21 @@ yarn() { zsh_nvm_lazy_load; yarn "$@"; }
 pnpm() { zsh_nvm_lazy_load; pnpm "$@"; }
 
 # ======================================================================================
+# Cached `<tool> init zsh` (atuin, zoxide)
+# ======================================================================================
+# Avoids spawning the tool on every shell start; regenerates the cache whenever the
+# tool's binary is newer than the cache (i.e. after an update).
+_cached_init() {
+	local bin=${commands[$1]} cache=$HOME/.cache/zsh/init-$1.zsh
+	[[ -n $bin ]] || return 1
+	if [[ ! -r $cache || $bin -nt $cache ]]; then
+		command mkdir -p ${cache:h}
+		"$bin" init zsh > $cache 2>/dev/null || { command rm -f $cache; return 1 }
+	fi
+	source $cache
+}
+
+# ======================================================================================
 # Zoxide
 # ======================================================================================
 [[ -f "$HOME/dotfiles/.zoxide.zsh" ]] && source "$HOME/dotfiles/.zoxide.zsh"
@@ -401,7 +416,7 @@ export EZA_COLORS="Makefile=38;5;197;1;4"
 # ======================================================================================
 # Atuin
 # ======================================================================================
-eval "$(atuin init zsh)"
+_cached_init atuin
 
 # ======================================================================================
 # Keybinds
@@ -425,19 +440,37 @@ done
 # Keep prompt anchored to the bottom of the terminal on resize
 # ======================================================================================
 # Scrolls the screen content down so the prompt (and the history above it) lands on
-# the last line, and moves the cursor with it so zle never needs a repaint.
+# the last line, and moves the cursor with it so zle stays consistent.
+typeset -g _anchor_rows=$LINES
+typeset -g _anchor_busy=0
+
 _anchor-prompt-bottom() {
-	# Don't touch the screen while editing a multi-line command
-	[[ $BUFFER == *$'\n'* ]] && return 0
+	local prev=$_anchor_rows
+	_anchor_rows=$LINES
 
-	# Ask the terminal for the cursor row (reply: ESC[row;colR)
-	local _esc row col
-	print -n '\e[6n' > /dev/tty
-	IFS='[;' read -rs -t 1 -d R _esc row col < /dev/tty || return 0
-	[[ $row == <-> ]] || return 0
+	{
+		# Only when the terminal grew taller: on shrink kitty already keeps the
+		# prompt at the bottom, and querying mid-rewrap during rapid window
+		# spawning is what causes glitched prompt lines.
+		(( LINES > prev )) || return 0
+		(( _anchor_busy )) && return 0
+		# Don't touch the screen while editing a multi-line command
+		[[ $BUFFER == *$'\n'* ]] && return 0
+		_anchor_busy=1
 
-	local pad=$(( LINES - row ))
-	(( pad > 0 )) && printf '\e[%dT\e[%dB' $pad $pad > /dev/tty
+		# Ask the terminal for the cursor row (reply: ESC[row;colR)
+		local _esc row col
+		print -n '\e[6n' > /dev/tty
+		IFS='[;' read -rs -t 1 -d R _esc row col < /dev/tty || return 0
+		[[ $row == <-> ]] || return 0
+
+		local pad=$(( LINES - row ))
+		(( pad > 0 )) && printf '\e[%dT\e[%dB' $pad $pad > /dev/tty
+	} always {
+		_anchor_busy=0
+		# One clean repaint at the new size; also heals p10k rewrap artifacts
+		zle reset-prompt 2>/dev/null
+	}
 }
 zle -N _anchor-prompt-bottom
 
