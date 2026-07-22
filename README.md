@@ -2,14 +2,7 @@
 
 Monokai-themed Hyprland setup on Fedora 44 — daily driven on a ThinkPad P14s Gen 5 (AMD).
 
-![desktop](assets/desktop.png)
-
-| | |
-|---|---|
-| ![terminal](assets/terminal.png) | ![rofi](assets/rofi.png) |
-| ![swaync](assets/swaync.png) | ![tridactyl](assets/tridactyl.png) |
-
-![wlogout](assets/wlogout.png)
+<!-- intro video goes here -->
 
 ## Origin: Fedora Workstation → Hyprland
 
@@ -75,6 +68,8 @@ daemon, it only executes while the window is open.
 
 ## Components
 
+![desktop](assets/desktop.png)
+
 | Role | Tool |
 |---|---|
 | Compositor | [Hyprland](https://hyprland.org/) — **Lua config provider** build ([COPR `sdegler/hyprland`](https://copr.fedorainfracloud.org/coprs/sdegler/hyprland/)), configured in `.config/hypr/lua/` |
@@ -87,6 +82,38 @@ daemon, it only executes while the window is open.
 | Wallpaper | swww, driven by `hypr/scripts/WallpaperDaemon.sh` |
 | Shell | zsh + oh-my-zsh + powerlevel10k, atuin, zoxide, eza, fzf + fd |
 | Theming | Monokai everywhere, accent `#F92672` — GTK 3/4, Qt (qt5ct/qt6ct + Kvantum), tridactyl, the lot |
+
+### Terminal
+
+kitty + zsh + powerlevel10k, with fastfetch, cava, and the `cdf` fuzzy
+directory picker from `.zshrc`:
+
+![terminal](assets/terminal.png)
+
+### Launcher
+
+Rofi with the Monokai accent:
+
+![rofi](assets/rofi.png)
+
+### Notifications
+
+SwayNC control center — media player, radio toggles, volume/brightness
+sliders:
+
+![swaync](assets/swaync.png)
+
+### Logout
+
+wlogout with the single hover/focus overlay patch:
+
+![wlogout](assets/wlogout.png)
+
+### Firefox
+
+tridactyl with the Monokai theme from `.config/tridactyl/themes`:
+
+![tridactyl](assets/tridactyl.png)
 
 ## Dependencies
 
