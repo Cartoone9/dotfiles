@@ -2,11 +2,13 @@
 
 Monokai-themed Hyprland setup on Fedora 44 — daily driven on a ThinkPad P14s Gen 5 (AMD).
 
-<!-- Drop screenshots into assets/ and uncomment:
 ![desktop](assets/desktop.png)
-![rofi](assets/rofi.png)
-![terminal](assets/terminal.png)
--->
+
+| | |
+|---|---|
+| ![rofi](assets/rofi.png) | ![swaync](assets/swaync.png) |
+
+![wlogout](assets/wlogout.png)
 
 ## Origin: Fedora Workstation → Hyprland
 
