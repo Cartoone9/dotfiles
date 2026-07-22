@@ -6,7 +6,7 @@
 # ==================================================
 # Playerctl
 
-music_icon="$HOME/.config/swaync/icons/music.png"
+music_icon="multimedia-player-symbolic"
 
 # Play the next track
 play_next() {
