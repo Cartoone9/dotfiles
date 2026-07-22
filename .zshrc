@@ -50,7 +50,10 @@ alias clt='cl && lt'
 alias ff='cl && fastfetch'
 alias cfinit='printf -- "-std=c++98\n-Wall\n-Wextra\n-Werror\n-Ihdrs\n-Isrcs\n" > compile_flags.txt'
 alias iginit='printf -- "*.o\n.objs\ncompile_flags.txt\n" >> .gitignore'
-alias check='~/scripts/perso-check-repo/check-repo.zsh'
+# check-repo config lives in the private perso-check-repo repo
+export CHECK_REPOS_CONFIG=~/scripts/perso-check-repo/repo_targets.json
+export CHECK_REPOS_SETTINGS=~/scripts/perso-check-repo/settings.json
+alias check='check-repo'
 alias ssh='kitten ssh'
 alias diff='kitten diff'
 alias lg="lazygit"
@@ -333,7 +336,7 @@ done
 # Scrolls the screen content down so the prompt (and the history above it) lands on
 # the last line, and moves the cursor with it so zle stays consistent.
 # Two triggers: terminal resize (TRAPWINCH) and before each prompt (precmd), the
-# latter for TUIs like claude/nvim that exit leaving the cursor high on the screen.
+# latter for TUIs like nvim that exit leaving the cursor high on the screen.
 zmodload zsh/zselect
 typeset -g _anchor_rows=$LINES
 typeset -g _anchor_busy=0
