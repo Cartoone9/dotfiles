@@ -115,6 +115,55 @@ tridactyl with the Monokai theme from `.config/tridactyl/themes`:
 
 ![tridactyl](assets/tridactyl.png)
 
+## Notable details
+
+Things this config does that you won't find in the average Hyprland starter.
+
+### Hidden-window indicator
+
+ALT+F maximizes the focused window ("hide other windows"). When something is
+maximized, a bar module shows one icon per window sitting underneath it;
+ALT+Tab or a click on the module cycles through them. The module vanishes
+when nothing is maximized. It listens on Hyprland's socket2 instead of
+polling, coalesces event bursts, and only re-emits when the output actually
+changes (`waybar/scripts/hidden-window.sh`).
+
+### Event-driven bar modules
+
+The network and battery modules are not polled. Each is a script that runs
+once and streams JSON to Waybar:
+
+- battery wakes on `power_supply` udev events, so plugging or unplugging the
+  charger updates the bar at kernel speed instead of after upowerd's settle
+  lag. Values are read from sysfs, with a 30s refresh for the drain rate
+  (`battery-status.sh`)
+- network wakes on NetworkManager events (bursts debounced) and reads SSID
+  and signal strength from `iw`, live kernel values, because nmcli's scan
+  cache can be minutes old. Also covers the VPN, wifi-off, and airplane
+  states (`network-vpn.sh`)
+- a small systemd user service (`rfkill-css-sync.service`) watches
+  `rfkill event` and keeps the swaync airplane and bluetooth toggles in sync
+  no matter what changed the state: GNOME Settings, nmcli, the Fn key, or a
+  hardware switch (`hypr/scripts/rfkill-watch.sh`)
+
+### wlogout, patched and adaptive
+
+`Wlogout.sh` reads the focused monitor's logical size and computes square
+buttons from it (a quarter of the screen height, clamped to 120-200 px),
+centered as a row, with a fallback for narrow screens. The
+`hover-grabs-focus` patch makes mouse hover move the keyboard focus, so the
+mouse and the arrow keys share a single highlight overlay instead of showing
+two. Patch and rebuild instructions live in `.config/wlogout/patches/`.
+
+### Native Lua config, current API
+
+The whole Hyprland config is written for the Lua config provider (binds,
+rules, animations, monitors), and every script uses the current `hl.dsp` /
+`eval` dispatch API. There is no classic `hyprctl keyword` or legacy
+dispatch syntax anywhere, so nothing here is one deprecation away from
+breaking. Small compatibility touches too, like handling `.fullscreen`
+being an int on current Hyprland and a bool on older ones.
+
 ## Dependencies
 
 Everything below is what the configs and scripts actually call. `install.sh`
