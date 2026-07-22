@@ -246,6 +246,17 @@ being an int on current Hyprland and a bool on older ones.
 > be adapted to whatever machine this runs on, along with the battery sysfs
 > paths (`BAT0`/`AC` in `battery-status.sh`) and the `fan1` sensor label the
 > fan script reads. Colors live in `waybar/style.css`.
+>
+> Two more machine-specific spots. `hypr/lua/monitors.lua` declares the
+> laptop panel as `eDP-1` and a 2560x1440 Lenovo P27h-30 on `DP-2`, then
+> pins workspaces 1-4 to the first and 5-8 to the second. `DP-2` is a common
+> output name, so a display of yours plugged in there gets forced to that
+> mode and position: run `hyprctl monitors` and edit the file first. The
+> generic `output = ""` rule at the end covers anything you don't declare.
+> And the SwayNC brightness slider names a backlight device directly
+> (`amdgpu_bl1`, `swaync/config.json`); it has to match an entry under
+> `/sys/class/backlight/` or the slider stays dead, and on Intel that is
+> `intel_backlight`.
 
 ## Footprint
 
