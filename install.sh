@@ -170,7 +170,11 @@ install_zsh() {
 
 	if [ "$(basename "${SHELL:-}")" != zsh ] && [ -t 0 ]; then
 		read -rp "Set zsh as your default shell? [y/N] " a
-		[[ $a == [yY] ]] && chsh -s "$(command -v zsh)"
+		# Not an && one-liner: declining would make this the function's exit
+		# status and `set -e` would abort the install before anything is linked.
+		if [[ $a == [yY] ]]; then
+			chsh -s "$(command -v zsh)"
+		fi
 	fi
 }
 
@@ -195,9 +199,11 @@ install_links() {
 		link "${d%/}" "$HOME/.config/$(basename "$d")"
 	done
 
-	# Point the wallpaper chain at the repo image unless one is already set
+	# Point the wallpaper chain at the repo image unless one is already set.
+	# -L as well as -e: a leftover symlink whose target is gone is still a
+	# symlink, and a bare `ln -s` onto it fails and would abort the install.
 	local wp="$HOME/.config/rofi/.current_wallpaper"
-	if [ ! -e "$wp" ]; then
+	if [ ! -e "$wp" ] && [ ! -L "$wp" ]; then
 		ln -s "$DOT/.config/hypr/wallpapers/wallpaper_main.png" "$wp"
 		echo "    linked $wp"
 	fi
