@@ -36,7 +36,7 @@
 | Logout menu | wlogout, with an optional patch for a single hover/focus overlay (`.config/wlogout/patches/`) |
 | Wallpaper | swww, set at login by `hypr/scripts/WallpaperDaemon.sh` |
 | Shell | zsh + oh-my-zsh + powerlevel10k, atuin, zoxide, eza, fzf + fd |
-| Theming | Monokai everywhere, accent `#F92672`: GTK 3/4, Qt (qt5ct/qt6ct + Kvantum), tridactyl |
+| Theming | Monokai everywhere, accent `#F92672`: GTK 3/4, Qt (qt5ct/qt6ct + Kvantum), tridactyl, btop |
 
 > [!IMPORTANT]
 > The Hyprland config is written in Lua and needs the Lua config provider build
@@ -84,6 +84,13 @@ them as a local diff.
 <summary><b>Terminal</b> — kitty + zsh + powerlevel10k, fastfetch, cava, and the <code>cdf</code> fuzzy directory picker</summary>
 
 ![terminal](assets/terminal.png)
+
+</details>
+
+<details>
+<summary><b>btop</b> — a custom Monokai theme: the neutral greys nvim uses, the <code>#F92672</code> accent, and a grey→red load gradient tuned to stay readable at any load</summary>
+
+![btop](assets/btop_example.png)
 
 </details>
 
@@ -236,6 +243,19 @@ rules, animations, monitors), and every script uses the current `hl.dsp` /
 dispatch syntax anywhere, so nothing here is one deprecation away from
 breaking. Small compatibility touches too, like handling `.fullscreen`
 being an int on current Hyprland and a bool on older ones.
+
+### A btop theme that stays legible
+
+`.config/btop/themes/monokai-red.theme` is a hand-built Monokai theme
+(`color_theme = "monokai-red"`), and two choices make it more than a recolour.
+Its greys are the monokai-pro *dimmed* ramp — the same neutral greys nvim uses —
+so nothing leans blue the way the stock onedark theme it replaced did. And the
+graph gradient encodes load as **hue, not brightness**: btop paints load
+percentages, and with `proc_colors` whole process rows, in the gradient colour
+for their value, so a dark-to-red ramp renders every low-load number in an
+unreadable near-black. Instead it climbs grey → rose → red with every stop at a
+readable lightness, so idle cores and quiet processes stay legible while the red
+still marks the busy ones.
 
 > [!WARNING]
 > **Tuned to this machine.** The fan and temperature modules change color as
