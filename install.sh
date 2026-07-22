@@ -102,9 +102,13 @@ setup_git_identity() {
 
 wire_wifi_menu() {
 	if [ "$WIFI_MENU" = rofi ]; then
-		msg "Wiring the Waybar network click to rofi-wifi.sh"
-		sed -i 's|scripts/wifi-settings.sh|scripts/rofi-wifi.sh|' \
-			"$DOT/.config/waybar/config.jsonc"
+		msg "Wiring the Waybar network click and the wifi keybinds to rofi-wifi.sh"
+		# binds.lua too: mainMod+Z and auxMod+grave open the same menu, and
+		# leaving them on wifi-settings.sh would launch a gnome-control-center
+		# that the rofi path never installs.
+		sed -i 's|scripts/wifi-settings.sh|scripts/rofi-wifi.sh|g' \
+			"$DOT/.config/waybar/config.jsonc" \
+			"$DOT/.config/hypr/lua/binds.lua"
 	else
 		msg "Keeping the GNOME Settings wifi panel (repo default)"
 	fi
