@@ -1,0 +1,461 @@
+/*
+ * Monokai for Tridactyl
+ * --------------------------------------------------------------
+ * Palette : Classic Monokai, red (#F92672) as accent
+ * Layout  : Floating-centered cmdline (toggleable to bottom)
+ * Modes   : Status indicator color-shifts per mode
+ *
+ * Verified against Tridactyl `master` (Dec 2025+):
+ *   - Mode classes: src/content.ts sets
+ *     "TridactylStatusIndicator ... TridactylMode<modename>"
+ *     so selectors are .TridactylModenormal, .TridactylModeinsert,
+ *     .TridactylModehint, .TridactylModevisual, .TridactylModeignore,
+ *     .TridactylModeinput, .TridactylModeex.
+ *   - Variable names: src/static/themes/default/default.css.
+ *
+ * Install:
+ *   1. Host this file (gist raw, dotfiles repo, etc.).
+ *   2. In any tab:
+ *        :colourscheme --url <RAW_URL_TO_THIS_FILE> monokai
+ *
+ * Recommended .tridactylrc additions:
+ *        set containerindicator false
+ *
+ *   Tridactyl's "container indicator" sets an INLINE !important
+ *   border on the status indicator that overrides this theme's
+ *   mode-aware borders. Disable it for the per-mode coloring
+ *   below to actually appear. (If you rely on container
+ *   coloring, leave it on and accept a single border color.)
+ *
+ * Customize:
+ *   --accent          : recolor everything semantic in one swap
+ *   --font            : preferred mono font
+ *   #cmdline_iframe   : two layout blocks at the bottom of the
+ *                       file -- toggle to switch between
+ *                       floating-centered and bottom-anchored
+ * --------------------------------------------------------------
+ */
+
+:root {
+    /* === Classic Monokai palette =========================== */
+    /* Backgrounds neutralized to grey (no warm Monokai brown). */
+    --mk-bg:         #303030;
+    --mk-bg-alt:     #3E3E3E;  /* hover / focused row             */
+    --mk-bg-deep:    #1F1F1F;  /* deeper accent surface           */
+    --mk-fg:         #F8F8F2;
+    --mk-fg-dim:     #CFD0C2;
+    --mk-comment:    #75715E;
+    --mk-line:       #4A4A4A;
+
+    --mk-red:        #F92672;  /* primary accent (classic)        */
+    /* --mk-red:     #FF6188; */  /* uncomment for Monokai Pro red */
+    --mk-orange:     #FD971F;
+    --mk-yellow:     #E6DB74;
+    --mk-green:      #A6E22E;
+    --mk-cyan:       #66D9EF;
+    --mk-purple:     #AE81FF;
+
+    /* === Semantic tokens ================================== */
+    --accent:        var(--mk-red);
+    --accent-fg:     var(--mk-bg);
+
+    --font:          "JetBrainsMono Nerd Font", "FiraCode Nerd Font",
+                     "SF Mono", "Menlo", monospace;
+    --font-sans:     -apple-system, "Inter", "Segoe UI", sans-serif;
+
+    --radius:        10px;
+    --radius-sm:     4px;
+    --pad:           0.9rem;
+    --pad-sm:        0.5rem;
+
+    --shadow:        0 12px 32px rgba(0, 0, 0, 0.55),
+                     0  4px 12px rgba(0, 0, 0, 0.30);
+
+    /* === Tridactyl modern variable bindings ===============
+     * Names match src/static/themes/default/default.css. */
+
+    /* Generic */
+    --tridactyl-font-family:           var(--font);
+    --tridactyl-font-family-sans:      var(--font-sans);
+    --tridactyl-font-size:             11pt;
+    --tridactyl-small-font-size:       12px;
+    --tridactyl-bg:                    var(--mk-bg);
+    --tridactyl-fg:                    var(--mk-fg);
+
+    /* Status indicator (mode pill) */
+    --tridactyl-status-font-family:    var(--font);
+    --tridactyl-status-font-size:      11px;
+    --tridactyl-status-bg:             var(--mk-bg);
+    --tridactyl-status-fg:             var(--mk-fg);
+    --tridactyl-status-border:         1px solid var(--accent);
+    --tridactyl-status-border-radius:  var(--radius-sm);
+
+    /* Search highlight (:find) */
+    --tridactyl-search-highlight-color: var(--mk-yellow);
+
+    /* Hint character tags (the f / jk labels) */
+    --tridactyl-hintspan-font-family:  var(--font);
+    --tridactyl-hintspan-font-size:    12px;
+    --tridactyl-hintspan-font-weight:  700;
+    --tridactyl-hintspan-fg:           var(--mk-bg);
+    --tridactyl-hintspan-bg:           var(--mk-cyan);
+    --tridactyl-hintspan-border-color: var(--mk-bg);
+    --tridactyl-hintspan-border-width: 1px;
+    --tridactyl-hintspan-border-style: solid;
+
+    /* Element highlights during hint mode */
+    --tridactyl-hint-active-fg:        var(--mk-bg);
+    --tridactyl-hint-active-bg:        var(--accent);
+    --tridactyl-hint-active-outline:   1px solid var(--accent);
+    --tridactyl-hint-bg:               rgba(102, 217, 239, 0.18);
+    --tridactyl-hint-outline:          1px solid var(--mk-cyan);
+
+    /* Commandline */
+    --tridactyl-cmdl-bg:               var(--mk-bg);
+    --tridactyl-cmdl-fg:               var(--mk-fg);
+    --tridactyl-cmdl-line-height:      1.5;
+    --tridactyl-cmdl-font-family:      var(--font);
+    --tridactyl-cmdl-font-size:        13pt;
+
+    /* Completions */
+    --tridactyl-cmplt-option-height:   1.6em;
+    --tridactyl-cmplt-fg:              var(--mk-fg);
+    --tridactyl-cmplt-bg:              var(--mk-bg);
+    --tridactyl-cmplt-font-size:       11pt;
+    --tridactyl-cmplt-font-family:     var(--font);
+    --tridactyl-cmplt-border-top:      1px solid var(--mk-line);
+
+    /* Section headers (Tabs / History / etc.) */
+    --tridactyl-header-first-bg:       var(--mk-bg);
+    --tridactyl-header-second-bg:      var(--mk-bg);
+    --tridactyl-header-third-bg:       var(--mk-bg);
+    --tridactyl-header-font-size:      0.75rem;
+    --tridactyl-header-font-weight:    600;
+    --tridactyl-header-border-bottom:  1px solid var(--mk-line);
+
+    /* URL color (in completions) */
+    --tridactyl-url-text-decoration:   none;
+    --tridactyl-url-fg:                var(--mk-cyan);
+    --tridactyl-url-bg:                transparent;
+    --tridactyl-url-cursor:            pointer;
+
+    /* Option focused (selected completion row) */
+    --tridactyl-of-fg:                 var(--mk-fg);
+    --tridactyl-of-bg:                 var(--mk-bg-alt);
+
+    /* New-tab spoiler / highlight box */
+    --tridactyl-highlight-box-font-weight: 600;
+    --tridactyl-highlight-box-bg:      var(--accent);
+    --tridactyl-highlight-box-fg:      var(--mk-bg);
+}
+
+/* ============================================================
+ * Command line input
+ * ============================================================ */
+#command-line-holder {
+    order: 1;
+    display: flex;
+    align-items: center;
+    border-top: 2px solid var(--accent);
+    background: var(--tridactyl-cmdl-bg);
+    color: var(--tridactyl-cmdl-fg);
+}
+
+/* Defensive: hide any prompt-prefix sibling element that may exist
+ * inside the holder. Keeps only the actual input. */
+#command-line-holder > *:not(#tridactyl-input) {
+    display: none !important;
+}
+
+#tridactyl-input {
+    width: 100%;
+    padding: 0.7rem var(--pad);
+    background: var(--tridactyl-cmdl-bg);
+    color: var(--tridactyl-cmdl-fg);
+    caret-color: var(--accent);
+    font-family: var(--tridactyl-cmdl-font-family);
+    font-size: var(--tridactyl-cmdl-font-size);
+    line-height: 1.3;
+    border: none;
+    outline: none;
+    vertical-align: middle;
+}
+
+#tridactyl-input::placeholder {
+    color: var(--mk-comment);
+    font-style: italic;
+}
+
+/* ============================================================
+ * Completions
+ * ============================================================ */
+#completions {
+    order: 2;
+    width: 100%;
+    display: inline-block;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: var(--tridactyl-cmplt-bg);
+    color: var(--tridactyl-cmplt-fg);
+    font-family: var(--tridactyl-cmplt-font-family);
+    font-size: var(--tridactyl-cmplt-font-size);
+    border-top: var(--tridactyl-cmplt-border-top);
+    /* Hard cap: roughly 12 result rows + 1 section header. */
+    max-height: calc(12 * var(--tridactyl-cmplt-option-height) + 3em) !important;
+    /* Themed scrollbar (Firefox) */
+    scrollbar-width: thin;
+    scrollbar-color: var(--mk-line) transparent;
+}
+
+/* Themed scrollbar (WebKit fallback for completeness) */
+#completions::-webkit-scrollbar {
+    width: 8px;
+}
+#completions::-webkit-scrollbar-track {
+    background: transparent;
+}
+#completions::-webkit-scrollbar-thumb {
+    background: var(--mk-line);
+    border-radius: var(--radius-sm);
+}
+#completions::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}
+
+#completions table {
+    font-size: inherit;
+    font-weight: 400;
+    border-spacing: 0;
+    table-layout: fixed;
+    padding: var(--pad-sm) var(--pad);
+}
+
+#completions > div {
+    max-height: unset;
+    min-height: unset;
+}
+
+/* Section headers ("Tabs", "History", "Bookmarks", etc.)
+ * Left padding kept light so the header reads as a separator
+ * label, not as a misaligned table row. */
+#completions .sectionHeader {
+    background: var(--tridactyl-header-first-bg);
+    color: var(--accent);
+    font-weight: var(--tridactyl-header-font-weight);
+    font-size: var(--tridactyl-header-font-size);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: var(--tridactyl-header-border-bottom);
+    padding: 0.6rem 1rem !important;
+    line-height: 1.6;
+    margin-top: 0;
+}
+
+/* Per-source table sizing fixes */
+#completions .HistoryCompletionSource,
+#completions .BmarkCompletionSource {
+    max-height: unset;
+    min-height: unset;
+}
+
+#completions .HistoryCompletionSource table,
+#completions .BmarkCompletionSource table {
+    width: 100%;
+    font-size: inherit;
+    border-spacing: 0;
+    table-layout: fixed;
+}
+
+#completions .BufferCompletionSource table {
+    width: unset;
+    font-size: unset;
+    border-spacing: unset;
+    table-layout: unset;
+}
+
+/* Hide noisy metadata columns */
+#completions table tr td.prefix,
+#completions table tr td.privatewindow,
+#completions table tr td.container,
+#completions table tr td.icon {
+    display: none;
+}
+
+#completions table tr {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#completions table tr .title {
+    width: 50%;
+    color: var(--tridactyl-fg);
+    padding-right: 1.5rem !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#completions table tr .url {
+    color: var(--tridactyl-url-fg);
+    background: var(--tridactyl-url-bg);
+    text-decoration: var(--tridactyl-url-text-decoration);
+    cursor: var(--tridactyl-url-cursor);
+    padding-left: 0.5rem !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Focused row: subtle bg shift + accent left bar */
+#completions .focused {
+    background: var(--tridactyl-of-bg);
+    color: var(--tridactyl-of-fg);
+    box-shadow: inset 2px 0 0 var(--accent);
+}
+
+#completions .focused .title {
+    color: var(--tridactyl-of-fg);
+    font-weight: 500;
+}
+
+#completions .focused .url {
+    background: transparent;
+    color: var(--accent);
+}
+
+/* ============================================================
+ * Cmdline iframe positioning
+ * ------------------------------------------------------------
+ * Default: floating-centered (modern command-palette feel).
+ * To anchor at the bottom (Tridactyl's native layout), comment
+ * out the FLOATING block and uncomment the BOTTOM block.
+ * ============================================================ */
+
+/* --- FLOATING CENTERED (default) ---
+ * `left: 50%` + `translateX(-50%)` is the only approach that
+ * truly centers a fixed-position element with `max-width`.
+ * `margin: 0 auto` does NOT work here because `position: fixed`
+ * with an explicit `left` removes the element from the centering
+ * flow that `margin: auto` relies on. */
+#cmdline_iframe {
+    position: fixed !important;
+    top: 18% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    bottom: unset !important;
+    width: 80% !important;
+    max-width: 920px !important;
+    z-index: 2147483647 !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow) !important;
+    overflow: hidden !important;
+}
+
+/* --- BOTTOM ANCHORED (alternative) ---
+#cmdline_iframe {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    z-index: 2147483647 !important;
+    box-shadow: var(--shadow) !important;
+}
+*/
+
+/* ============================================================
+ * Status indicator (mode pill, bottom-right)
+ *
+ * Class structure (verified from src/content.ts):
+ *   "cleanslate TridactylStatusIndicator [TridactylPrivate]
+ *    TridactylMode<modename>"
+ * where <modename> is the literal mode string with no separator
+ * (lowercase: normal, insert, hint, visual, ignore, input, ex).
+ *
+ * NOTE: requires `:set containerindicator false`. Otherwise
+ * Tridactyl writes an inline `style="border: ... !important"`
+ * which beats CSS even with !important.
+ * ============================================================ */
+.TridactylStatusIndicator {
+    position: fixed !important;
+    bottom: 0 !important;
+    right: 0 !important;
+    background: var(--tridactyl-status-bg) !important;
+    color: var(--tridactyl-status-fg) !important;
+    border: var(--tridactyl-status-border) !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    border-top-left-radius: var(--tridactyl-status-border-radius) !important;
+    font-family: var(--tridactyl-status-font-family) !important;
+    font-size: var(--tridactyl-status-font-size) !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.04em !important;
+    padding: 0.4ex 1ex !important;
+    text-transform: lowercase !important;
+}
+
+/* Mode-specific accents (border + text) */
+.TridactylModenormal {
+    color: var(--tridactyl-fg) !important;
+    border-color: var(--accent) !important;
+}
+.TridactylModeinsert {
+    color: var(--mk-green) !important;
+    border-color: var(--mk-green) !important;
+}
+.TridactylModeinput {
+    color: var(--mk-cyan) !important;
+    border-color: var(--mk-cyan) !important;
+}
+.TridactylModevisual {
+    color: var(--mk-purple) !important;
+    border-color: var(--mk-purple) !important;
+}
+.TridactylModehint {
+    color: var(--mk-yellow) !important;
+    border-color: var(--mk-yellow) !important;
+}
+.TridactylModeignore {
+    color: var(--mk-comment) !important;
+    border-color: var(--mk-comment) !important;
+}
+.TridactylModeex {
+    color: var(--accent) !important;
+    border-color: var(--accent) !important;
+}
+
+/* Private (incognito) windows -- visual reminder */
+.TridactylPrivate {
+    color: var(--mk-purple) !important;
+    border-color: var(--mk-purple) !important;
+}
+
+/* Mouse-hover hide (set by Tridactyl's mouseenter handler) */
+.TridactylInvisible {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* ============================================================
+ * Find-mode highlights
+ * ============================================================ */
+.TridactylFindHl {
+    background: var(--mk-yellow) !important;
+    color: var(--mk-bg) !important;
+    border-radius: 2px !important;
+}
+
+.TridactylFindSelHl {
+    background: var(--accent) !important;
+    color: var(--mk-bg) !important;
+    border-radius: 2px !important;
+}
+
+/* ============================================================
+ * Newtab page background
+ * The cmdline iframe's body always contains #command-line-holder,
+ * so excluding it confines this rule to the newtab document.
+ * ============================================================ */
+body:not(:has(#command-line-holder)) {
+    background-color: #1A1A1A !important;
+}
