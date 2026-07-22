@@ -1,0 +1,508 @@
+#!/usr/bin/env bash
+#
+# rofi-bluetooth improved
+#
+# Depends on:
+#   rofi
+#   bluez / bluetoothctl
+#   rfkill
+#   notify-send
+
+set -u
+
+divider="──────────────────────────"
+goback="  Back"
+exit_option="󰈆  Exit"
+
+notif_title="Bluetooth"
+
+rofi_dmenu() {
+    rofi -dmenu "$@" \
+        -theme-str 'listview { lines: 7; fixed-height: false; }'
+}
+
+notify_ok() {
+    notify-send -u normal "$notif_title" "$1"
+}
+
+notify_fail() {
+    notify-send -u critical "$notif_title failed" "$1"
+}
+
+run_bt() {
+    local output
+
+    if ! output="$(bluetoothctl "$@" 2>&1)"; then
+        notify_fail "$output"
+        return 1
+    fi
+
+    return 0
+}
+
+bt_show() {
+    bluetoothctl show 2>/dev/null
+}
+
+power_on() {
+    bt_show | grep -q "Powered: yes"
+}
+
+adapter_available() {
+    bt_show | grep -q "Controller"
+}
+
+scan_on() {
+    bt_show | grep -q "Discovering: yes"
+}
+
+pairable_on() {
+    bt_show | grep -q "Pairable: yes"
+}
+
+discoverable_on() {
+    bt_show | grep -q "Discoverable: yes"
+}
+
+device_info() {
+    bluetoothctl info "$1" 2>/dev/null
+}
+
+device_connected() {
+    device_info "$1" | grep -q "Connected: yes"
+}
+
+device_paired() {
+    device_info "$1" | grep -q "Paired: yes"
+}
+
+device_trusted() {
+    device_info "$1" | grep -q "Trusted: yes"
+}
+
+device_name() {
+    local mac="$1"
+    local name
+
+    name=$(device_info "$mac" | awk -F': ' '/Alias:/ { print $2; exit }')
+    [[ -z "$name" ]] && name=$(device_info "$mac" | awk -F': ' '/Name:/ { print $2; exit }')
+    [[ -z "$name" ]] && name="$mac"
+
+    printf '%s\n' "$name"
+}
+
+wait_for_connected() {
+    local mac="$1"
+
+    for _ in {1..10}; do
+        device_connected "$mac" && return 0
+        sleep 1
+    done
+
+    return 1
+}
+
+wait_for_disconnected() {
+    local mac="$1"
+
+    for _ in {1..10}; do
+        ! device_connected "$mac" && return 0
+        sleep 1
+    done
+
+    return 1
+}
+
+connect_device() {
+    local mac="$1"
+    local name="$2"
+    local output
+
+    if ! output="$(bluetoothctl connect "$mac" 2>&1)"; then
+        notify_fail "$output"
+        return 1
+    fi
+
+    if wait_for_connected "$mac"; then
+        notify_ok "Connected to $name"
+        return 0
+    fi
+
+    notify_fail "Tried to connect to $name, but it is still disconnected."
+    return 1
+}
+
+disconnect_device() {
+    local mac="$1"
+    local name="$2"
+    local output
+
+    if ! output="$(bluetoothctl disconnect "$mac" 2>&1)"; then
+        notify_fail "$output"
+        return 1
+    fi
+
+    if wait_for_disconnected "$mac"; then
+        notify_ok "Disconnected from $name"
+        return 0
+    fi
+
+    notify_fail "Tried to disconnect from $name, but it is still connected."
+    return 1
+}
+
+pair_device() {
+    local mac="$1"
+    local name="$2"
+    local output
+
+    if ! output="$(bluetoothctl pair "$mac" 2>&1)"; then
+        notify_fail "$output"
+        return 1
+    fi
+
+    notify_ok "Paired with $name"
+}
+
+remove_device() {
+    local mac="$1"
+    local name="$2"
+    local confirm
+    local output
+
+    confirm=$(printf "No\nYes\n" | rofi_dmenu -p "Remove $name?")
+    [[ "$confirm" != "Yes" ]] && return 0
+
+    if ! output="$(bluetoothctl remove "$mac" 2>&1)"; then
+        notify_fail "$output"
+        return 1
+    fi
+
+    notify_ok "Removed $name"
+}
+
+trust_device() {
+    local mac="$1"
+    local name="$2"
+
+    if run_bt trust "$mac"; then
+        notify_ok "Trusted $name"
+    fi
+}
+
+untrust_device() {
+    local mac="$1"
+    local name="$2"
+
+    if run_bt untrust "$mac"; then
+        notify_ok "Untrusted $name"
+    fi
+}
+
+toggle_power() {
+    if power_on; then
+        if run_bt power off; then
+            notify_ok "Power off"
+        fi
+    else
+        if rfkill list bluetooth 2>/dev/null | grep -q 'blocked: yes'; then
+            rfkill unblock bluetooth 2>/dev/null || true
+            sleep 1
+        fi
+
+        if run_bt power on; then
+            notify_ok "Power on"
+        fi
+    fi
+
+    show_menu
+}
+
+toggle_scan() {
+    if scan_on; then
+        if run_bt scan off; then
+            notify_ok "Scan off"
+        fi
+    else
+        notify_ok "Scanning for devices..."
+        bluetoothctl --timeout 8 scan on >/dev/null 2>&1 || true
+    fi
+
+    show_menu
+}
+
+toggle_pairable() {
+    if pairable_on; then
+        if run_bt pairable off; then
+            notify_ok "Pairable off"
+        fi
+    else
+        if run_bt pairable on; then
+            notify_ok "Pairable on"
+        fi
+    fi
+
+    show_menu
+}
+
+toggle_discoverable() {
+    if discoverable_on; then
+        if run_bt discoverable off; then
+            notify_ok "Discoverable off"
+        fi
+    else
+        if run_bt discoverable on; then
+            notify_ok "Discoverable on"
+        fi
+    fi
+
+    show_menu
+}
+
+print_status() {
+    if ! power_on; then
+        echo ""
+        return
+    fi
+
+    local connected_names=()
+    local mac
+    local name
+
+    while IFS= read -r mac; do
+        [[ -z "$mac" ]] && continue
+
+        if device_connected "$mac"; then
+            name=$(device_name "$mac")
+            connected_names+=("$name")
+        fi
+    done < <(bluetoothctl devices Paired 2>/dev/null | awk '/^Device/ { print $2 }')
+
+    if (( ${#connected_names[@]} == 0 )); then
+        printf '󰂯\n'
+    else
+        printf '󰂱 %s\n' "$(IFS=', '; echo "${connected_names[*]}")"
+    fi
+}
+
+device_menu() {
+    local mac="$1"
+    local name="$2"
+
+    local connected
+    local paired
+    local trusted
+    local forget
+    local options
+    local chosen
+
+    if device_connected "$mac"; then
+        connected="󰂲  Disconnect"
+    else
+        connected="󰂱  Connect"
+    fi
+
+    if device_paired "$mac"; then
+        paired="󰌷  Remove pairing"
+    else
+        paired="󰌸  Pair"
+    fi
+
+    if device_trusted "$mac"; then
+        trusted="󰦝  Untrust"
+    else
+        trusted="󰢄  Trust"
+    fi
+
+    forget="󰧧  Remove device"
+
+    options="$connected\n$paired\n$trusted\n$forget\n$divider\n$goback\n$exit_option"
+
+    chosen="$(printf "%b" "$options" | rofi_dmenu -p "$name")"
+
+    case "$chosen" in
+        "" | "$divider" | "$exit_option")
+            return
+            ;;
+
+        "$connected")
+            if device_connected "$mac"; then
+                disconnect_device "$mac" "$name"
+            else
+                connect_device "$mac" "$name"
+            fi
+            device_menu "$mac" "$name"
+            ;;
+
+        "$paired")
+            if device_paired "$mac"; then
+                remove_device "$mac" "$name"
+                show_menu
+            else
+                pair_device "$mac" "$name"
+                device_menu "$mac" "$name"
+            fi
+            ;;
+
+        "$trusted")
+            if device_trusted "$mac"; then
+                untrust_device "$mac" "$name"
+            else
+                trust_device "$mac" "$name"
+            fi
+            device_menu "$mac" "$name"
+            ;;
+
+        "$forget")
+            remove_device "$mac" "$name"
+            show_menu
+            ;;
+
+        "$goback")
+            show_menu
+            ;;
+    esac
+}
+
+build_device_entries() {
+    local line
+    local mac
+    local name
+    local icon
+
+    bluetoothctl devices 2>/dev/null | while IFS= read -r line; do
+        [[ "$line" =~ ^Device[[:space:]]+([A-Fa-f0-9:]{17})[[:space:]]+(.+)$ ]] || continue
+
+        mac="${BASH_REMATCH[1]}"
+        name="${BASH_REMATCH[2]}"
+
+        if device_connected "$mac"; then
+            icon="󰂱"
+        elif device_paired "$mac"; then
+            icon="󰂯"
+        else
+            icon="󰂲"
+        fi
+
+        printf '%s\t%s\t%s\n' "$icon  $name" "$mac" "$name"
+    done
+}
+
+show_menu() {
+    if ! adapter_available; then
+        notify_fail "No Bluetooth adapter found."
+        return 1
+    fi
+
+    local power
+    local scan
+    local pairable
+    local discoverable
+
+    local -a display
+    local -a action
+
+    if power_on; then
+        power="󰂯  Power: on"
+
+        if scan_on; then
+            scan="󰂰  Scan: on"
+        else
+            scan="󰂰  Scan: off"
+        fi
+
+        if pairable_on; then
+            pairable="󰌷  Pairable: on"
+        else
+            pairable="󰌸  Pairable: off"
+        fi
+
+        if discoverable_on; then
+            discoverable="󰈈  Discoverable: on"
+        else
+            discoverable="󰈉  Discoverable: off"
+        fi
+
+        while IFS=$'\t' read -r label mac name; do
+            [[ -z "${label:-}" ]] && continue
+
+            display+=("$label")
+            action+=("dev:${mac}"$'\t'"${name}")
+        done < <(build_device_entries)
+
+        display+=("$divider")
+        action+=("sep")
+
+        display+=("$power")
+        action+=("act:power")
+
+        display+=("$scan")
+        action+=("act:scan")
+
+        display+=("$pairable")
+        action+=("act:pairable")
+
+        display+=("$discoverable")
+        action+=("act:discoverable")
+
+        display+=("$exit_option")
+        action+=("exit")
+    else
+        power="󰂲  Power: off"
+
+        display+=("$power")
+        action+=("act:power")
+
+        display+=("$exit_option")
+        action+=("exit")
+    fi
+
+    local sel
+    sel=$(printf "%s\n" "${display[@]}" | rofi_dmenu -i -format 'i' "$@" -p "Bluetooth")
+    [[ -z "$sel" ]] && return 0
+
+    local act
+    act="${action[$sel]}"
+
+    case "$act" in
+        sep | exit)
+            return 0
+            ;;
+
+        act:power)
+            toggle_power
+            ;;
+
+        act:scan)
+            toggle_scan
+            ;;
+
+        act:pairable)
+            toggle_pairable
+            ;;
+
+        act:discoverable)
+            toggle_discoverable
+            ;;
+
+        dev:*)
+            local payload
+            local mac
+            local name
+
+            payload="${act#dev:}"
+            IFS=$'\t' read -r mac name <<< "$payload"
+
+            device_menu "$mac" "$name"
+            ;;
+    esac
+}
+
+case "${1:-}" in
+    --status)
+        print_status
+        ;;
+    *)
+        show_menu "$@"
+        ;;
+esac
