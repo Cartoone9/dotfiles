@@ -1,0 +1,218 @@
+* {
+  font-family: "JetBrainsMono Nerd Font", "Symbols Nerd Font", monospace;
+  font-size: 14px;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+/* Main bar is transparent, modules float as islands */
+window#waybar {
+  background: transparent;
+  color: #d4d4d4;
+}
+
+tooltip {
+  background: rgba(40, 40, 40, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: #d4d4d4;
+}
+
+/* ── Bubbles ── */
+.modules-center,
+.modules-right {
+  background: rgba(40, 40, 40, 0.25);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0 4px;
+  margin: 0 4px;
+}
+
+/* Left group is transparent: workspaces and the hidden-windows
+   indicator render as two separate islands */
+.modules-left {
+  background: transparent;
+  margin: 0 4px;
+}
+
+/* ── Workspaces ── */
+#workspaces {
+  background: rgba(40, 40, 40, 0.25);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0 4px;
+}
+
+#workspaces button {
+  padding: 2px 6px;
+  margin: 4px 1px;
+  color: #555555;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+#workspaces button:first-child {
+  margin-left: 0;
+}
+
+#workspaces button:last-child {
+  margin-right: 0;
+}
+
+#workspaces button.active {
+  color: #e0e0e0;
+  border: 1px solid #888888;
+  background: transparent;
+}
+
+#workspaces button.occupied {
+  color: #999999;
+}
+
+#workspaces button:hover {
+  color: #aaaaaa;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* ── Hidden windows indicator: own small island right of workspaces,
+      only present while a window is maximized over others ── */
+#custom-hidden {
+  background: rgba(40, 40, 40, 0.25);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  /* right side gets +3px: the MD icon glyphs draw flush to the right
+     edge of their cell, so equal padding looks tighter on the right */
+  padding: 0 15px 0 12px;
+  margin: 0 0 0 8px;
+  color: #777777;
+  font-size: 13px;
+  transition: all 0.15s ease;
+}
+
+#custom-hidden.empty {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+#custom-hidden:hover {
+  color: #aaaaaa;
+  background: rgba(60, 60, 60, 0.35);
+}
+
+/* ── Window class name ── */
+#window {
+  margin-left: 8px;
+  margin-right: 4px;
+  color: #999999;
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* ── Clock ── */
+#clock {
+  padding: 0 10px;
+  font-weight: 600;
+  color: #d4d4d4;
+}
+
+/* ── Tray ── */
+#tray {
+  padding: 0 6px 0 12px;
+  margin: 4px 0;
+}
+
+#tray > .passive {
+  -gtk-icon-effect: dim;
+}
+
+/* ── Separators ── */
+#custom-sep,
+#custom-sep2 {
+  color: #3a3a3a;
+  padding: 0 4px;
+}
+
+/* ── Vitals (numbers are white via pango markup, labels are grey via markup) ── */
+#memory,
+#cpu,
+#temperature,
+#custom-fan,
+#disk {
+  padding: 0 6px;
+  margin: 4px 0;
+  color: #e0e0e0;
+  font-size: 13px;
+}
+
+#temperature.critical {
+  color: #f92672;
+}
+
+#custom-fan.warm {
+  color: #fd971f;
+}
+
+#custom-fan.high {
+  color: #f92672;
+}
+
+#custom-fan.critical {
+  color: #ae81ff;
+}
+
+/* ── Network icon ── */
+#custom-network {
+  padding: 0 8px;
+  margin: 4px 2px;
+  color: #d4d4d4;
+  font-size: 14px;
+}
+
+#custom-network.disconnected {
+  color: #555555;
+}
+
+#custom-network.vpn {
+  color: #d4d4d4;
+}
+
+/* ── Battery ── */
+#custom-battery {
+  padding: 0 6px;
+  margin: 4px 2px;
+  color: #d4d4d4;
+  font-size: 14px;
+}
+
+#custom-battery.charging {
+  color: #a6e22e;
+}
+
+#custom-battery.charging.full {
+  color: #66d9ef;
+}
+
+#custom-battery.warning:not(.charging) {
+  color: #fd971f;
+}
+
+#custom-battery.critical:not(.charging) {
+  color: #f92672;
+}
+
+/* ── Power icon ── */
+#custom-power {
+  color: #f92672;
+  padding: 0 12px 0 4px;
+  margin: 4px 2px;
+  font-size: 14px;
+}
+
+#custom-power:hover {
+  color: #ff6188;
+}
