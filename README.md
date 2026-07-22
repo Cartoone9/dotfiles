@@ -129,7 +129,14 @@ tridactyl with the Monokai theme from `.config/tridactyl/themes`:
 
 ## Keybinds
 
-`mainMod` is **ALT**. The essentials:
+This config uses **ALT** as the main modifier, not SUPER: window management
+lives on ALT, helpers (screenshots, power menu, layout switching...) live
+on SUPER. Not your taste? It is one variable at the top of
+`.config/hypr/lua/binds.lua`: set `mainMod` to `"SUPER"` and the helper
+binds swap to ALT automatically, with no collisions. `install.sh` also asks
+which one you want.
+
+The essentials, with the default ALT:
 
 | Keys | Action |
 |---|---|
@@ -180,6 +187,17 @@ once and streams JSON to Waybar:
   `rfkill event` and keeps the swaync airplane and bluetooth toggles in sync
   no matter what changed the state: GNOME Settings, nmcli, the Fn key, or a
   hardware switch (`hypr/scripts/rfkill-watch.sh`)
+
+### Thresholds tuned to this machine
+
+The fan and temperature modules change color as things heat up: the fan
+readout steps through warm, high and critical at 2200, 3000 and 4000 rpm
+(`waybar/scripts/fan-status.sh`), and the CPU temperature turns critical
+at 85°C (`critical-threshold` in `waybar/config.jsonc`). The colors live
+in `waybar/style.css`. Those numbers fit a ThinkPad P14s Gen 5 and should
+be adapted to whatever machine this runs on, along with the battery sysfs
+paths (`BAT0`/`AC` in `battery-status.sh`) and the `fan1` sensor label the
+fan script reads.
 
 ### Two-tier lock and suspend timings
 

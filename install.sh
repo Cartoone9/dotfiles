@@ -49,6 +49,25 @@ choose_wifi_menu() {
 	if [ "${a:-2}" = 1 ]; then WIFI_MENU=gnome; else WIFI_MENU=rofi; fi
 }
 
+choose_main_mod() {
+	[ -t 0 ] || return 0
+	cat <<-'EOF'
+
+	Main modifier: this config uses ALT as mainMod by design (window
+	management on ALT, helpers like screenshots and the power menu on
+	SUPER). If you prefer the traditional SUPER as main, the helper binds
+	swap to ALT automatically, no collisions.
+
+	EOF
+	local a
+	read -rp "Main modifier [1=ALT (default) / 2=SUPER]: " a
+	if [ "${a:-1}" = 2 ]; then
+		sed -i 's/^local mainMod = "ALT"/local mainMod = "SUPER"/' \
+			"$DOT/.config/hypr/lua/binds.lua"
+		msg "mainMod set to SUPER"
+	fi
+}
+
 wire_wifi_menu() {
 	if [ "$WIFI_MENU" = rofi ]; then
 		msg "Wiring the Waybar network click to rofi-wifi.sh"
@@ -155,6 +174,7 @@ install_links() {
 # -------------------------------------------------------------------- main ---
 if [ "$LINKS_ONLY" != --links-only ]; then
 	choose_wifi_menu
+	choose_main_mod
 	install_packages
 	install_fonts
 	install_zsh
