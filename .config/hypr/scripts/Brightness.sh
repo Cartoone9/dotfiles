@@ -6,7 +6,6 @@
 # ==================================================
 # Script for Monitor backlights (if supported) using brightnessctl
 
-iDIR="$HOME/.config/swaync/icons"
 notification_timeout=1000
 step=10  # INCREASE/DECREASE BY THIS VALUE
 
@@ -15,14 +14,9 @@ get_brightness() {
     brightnessctl -m | cut -d, -f4 | tr -d '%'
 }
 
-# Determine the icon based on brightness level
+# Icon for the notification (freedesktop name; level shows in the value bar)
 get_icon_path() {
-    local brightness=$1
-    local level=$(( (brightness + 19) / 20 * 20 ))  # Round up to next 20
-    if (( level > 100 )); then
-        level=100
-    fi
-    echo "$iDIR/brightness-${level}.png"
+    echo "display-brightness-symbolic"
 }
 
 # Send notification

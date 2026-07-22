@@ -6,8 +6,6 @@
 # real wifi-block transition, so AirplaneMode.sh must NOT notify itself.
 # Run as a systemd user service: rfkill-css-sync.service.
 
-notif="$HOME/.config/swaync/images/ja.png"
-
 wifi_blocked() {
     rfkill list wifi | grep -qE "(Soft|Hard) blocked: yes"
 }
@@ -30,9 +28,9 @@ rfkill event | while read -r _; do
     wifi_blocked && cur=on || cur=off
     if [[ "$cur" != "$prev" ]]; then
         if [[ "$cur" == on ]]; then
-            notify-send -u low -i "$notif" " Airplane" " mode: ON"
+            notify-send -u low -i airplane-mode-symbolic " Airplane" " mode: ON"
         else
-            notify-send -u low -i "$notif" " Airplane" " mode: OFF"
+            notify-send -u low -i airplane-mode-disabled-symbolic " Airplane" " mode: OFF"
         fi
         prev=$cur
     fi

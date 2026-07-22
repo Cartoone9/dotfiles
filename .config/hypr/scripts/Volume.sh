@@ -6,7 +6,6 @@
 # ==================================================
 # Scripts for volume controls for audio and mic 
 
-iDIR="$HOME/.config/swaync/icons"
 sDIR="$HOME/.config/hypr/scripts"
 
 # Get Volume
@@ -28,17 +27,17 @@ get_volume() {
 # Get icons
 get_icon() {
     if [[ "$(pamixer --get-mute)" == "true" ]]; then
-        echo "$iDIR/volume-mute.png"
+        echo "audio-volume-muted-symbolic"
         return
     fi
 
     current=$(pamixer --get-volume)
     if [[ "$current" -le 30 ]]; then
-        echo "$iDIR/volume-low.png"
+        echo "audio-volume-low-symbolic"
     elif [[ "$current" -le 60 ]]; then
-        echo "$iDIR/volume-mid.png"
+        echo "audio-volume-medium-symbolic"
     else
-        echo "$iDIR/volume-high.png"
+        echo "audio-volume-high-symbolic"
     fi
 }
 
@@ -80,7 +79,7 @@ dec_volume() {
 # Toggle Mute
 toggle_mute() {
 	if [ "$(pamixer --get-mute)" == "false" ]; then
-		pamixer -m && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "$iDIR/volume-mute.png" " Mute"
+		pamixer -m && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "audio-volume-muted-symbolic" " Mute"
 	elif [ "$(pamixer --get-mute)" == "true" ]; then
 		pamixer -u && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "$(get_icon)" " Volume:" " Switched ON"
 	fi
@@ -89,9 +88,9 @@ toggle_mute() {
 # Toggle Mic
 toggle_mic() {
 	if [ "$(pamixer --default-source --get-mute)" == "false" ]; then
-		pamixer --default-source -m && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "$iDIR/microphone-mute.png" " Microphone:" " Switched OFF"
+		pamixer --default-source -m && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "microphone-sensitivity-muted-symbolic" " Microphone:" " Switched OFF"
 	elif [ "$(pamixer --default-source --get-mute)" == "true" ]; then
-		pamixer --default-source -u && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "$iDIR/microphone.png" " Microphone:" " Switched ON"
+		pamixer --default-source -u && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "microphone-sensitivity-high-symbolic" " Microphone:" " Switched ON"
 	fi
 }
 # Get Mic Icon
@@ -99,9 +98,9 @@ get_mic_icon() {
     local muted="$(pamixer --default-source --get-mute)"
     local current="$(pamixer --default-source --get-volume)"
     if [[ "$muted" == "true" || "$current" -eq "0" ]]; then
-        echo "$iDIR/microphone-mute.png"
+        echo "microphone-sensitivity-muted-symbolic"
     else
-        echo "$iDIR/microphone.png"
+        echo "microphone-sensitivity-high-symbolic"
     fi
 }
 
@@ -128,12 +127,12 @@ notify_mic_user() {
     local icon message
 
     if [[ "$muted" == "true" || "$level" -eq 0 ]]; then
-        icon="$iDIR/microphone-mute.png"
+        icon="microphone-sensitivity-muted-symbolic"
         notify-send -e -h "string:x-canonical-private-synchronous:volume_notif" \
             -h boolean:SWAYNC_BYPASS_DND:true -u low -i "$icon" \
             " Mic Level:" " Muted"
     else
-        icon="$iDIR/microphone.png"
+        icon="microphone-sensitivity-high-symbolic"
         notify-send -e -h int:value:"$level" -h "string:x-canonical-private-synchronous:volume_notif" \
             -h boolean:SWAYNC_BYPASS_DND:true -u low -i "$icon" \
             " Mic Level:" " ${level}%"

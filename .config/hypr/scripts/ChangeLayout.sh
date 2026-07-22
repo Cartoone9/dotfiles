@@ -8,8 +8,6 @@
 # Keybinds are static in lua/binds.lua; rebinding them here per layout fought
 # the Lua binds and the winner depended on reload order.
 
-notif="$HOME/.config/swaync/images/ja.png"
-
 layouts=(master dwindle scrolling)
 
 get_layout() {
@@ -33,7 +31,7 @@ set_layout() {
 
   # hyprctl keyword is rejected by the Lua config provider; use eval
   hyprctl eval "hl.config({ general = { layout = '$target' } })"
-  notify-send -e -u low -i "$notif" " ${target^} Layout"
+  notify-send -e -u low -i input-keyboard-symbolic " ${target^} Layout"
 }
 
 current="$(get_layout)"
