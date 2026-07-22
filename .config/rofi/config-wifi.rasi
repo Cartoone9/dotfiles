@@ -1,0 +1,111 @@
+/* Wifi menu - grey-minimal style for dmenu mode */
+
+@import "~/.config/rofi/0-shared-fonts.rasi"
+
+* {
+    bg:               rgba(40,40,40,0.85);
+    bg-alt:           rgba(50,50,50,0.6);
+    fg:               #d4d4d4;
+    fg-muted:         #999999;
+    accent:           #F92672;
+    border-col:       rgba(255,255,255,0.08);
+
+    background-color: transparent;
+    text-color:       @fg;
+}
+
+window {
+    transparency:     "real";
+    location:         north east;
+    anchor:           north east;
+    x-offset:         -30px;
+    y-offset:         30px;
+    width:            320px;
+    border:           1px solid;
+    border-color:     @border-col;
+    border-radius:    10px;
+    background-color: @bg;
+    cursor:           "default";
+}
+
+mainbox {
+    spacing:          8px;
+    padding:          12px;
+    background-color: transparent;
+    children:         [ "inputbar", "message", "listview" ];
+}
+
+inputbar {
+    spacing:          8px;
+    padding:          8px 12px;
+    border:           1px solid;
+    border-color:     @border-col;
+    border-radius:    10px;
+    background-color: @bg-alt;
+    children:         [ "prompt", "entry" ];
+}
+
+prompt {
+    background-color: transparent;
+    text-color:       @accent;
+}
+
+entry {
+    padding:          0px;
+    background-color: transparent;
+    text-color:       @fg;
+    cursor:           text;
+    placeholder:      "Search...";
+    placeholder-color: @fg-muted;
+}
+
+listview {
+    columns:          1;
+    lines:            25;
+    fixed-height:     false;
+    dynamic:          false;
+    cycle:            false;
+    scrollbar:        false;
+    spacing:          4px;
+    padding:          4px 0px;
+    background-color: transparent;
+}
+
+element {
+    padding:          8px 12px;
+    border-radius:    8px;
+    background-color: transparent;
+    text-color:       @fg;
+    cursor:           pointer;
+}
+
+element selected.normal {
+    background-color: @accent;
+    text-color:       #1e1e1e;
+}
+
+element-text {
+    background-color: transparent;
+    text-color:       inherit;
+    vertical-align:   0.5;
+    horizontal-align: 0.0;
+}
+
+element-text selected {
+    background-color: transparent;
+    text-color:       inherit;
+}
+
+message {
+    background-color: transparent;
+    border:           0px;
+}
+
+textbox {
+    padding:          8px 12px;
+    border-radius:    8px;
+    background-color: @bg-alt;
+    text-color:       @fg;
+    vertical-align:   0.5;
+    horizontal-align: 0.5;
+}
