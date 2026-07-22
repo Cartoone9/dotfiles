@@ -146,6 +146,16 @@ once and streams JSON to Waybar:
   no matter what changed the state: GNOME Settings, nmcli, the Fn key, or a
   hardware switch (`hypr/scripts/rfkill-watch.sh`)
 
+### Two-tier lock and suspend timings
+
+`hypridle.conf` behaves differently depending on whether the session is
+already locked. Unlocked and idle: lock at 10 min, screen off at 10.5,
+suspend at 11. Already locked (you locked it yourself and walked away):
+screen off after 10 seconds, suspend after 1 minute. Locking manually is
+the signal that you're gone, so the machine doesn't sit there lit and
+awake for another ten minutes. Suspend always locks first
+(`before_sleep_cmd`).
+
 ### wlogout, patched and adaptive
 
 `Wlogout.sh` reads the focused monitor's logical size and computes square
