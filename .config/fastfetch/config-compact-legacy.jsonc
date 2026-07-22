@@ -28,12 +28,6 @@
             "keyColor": "yellow"
         },
         {
-            "keyColor": "blue",
-            "key": " ",
-            "text": "echo Jakoolit: v${DOTS_VERSION}",
-	    "type": "command"
-        },
-        {
             "type": "wm",
             "key": " ",
             "keyColor": "magenta"

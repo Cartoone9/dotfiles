@@ -54,13 +54,6 @@
             "key": " ",
             "keyColor": "31"
         },
-      {
-          "type": "command",
-          "key": " ",
-          "keyColor": "36",
-          "shell": "/bin/bash",
-          "text": "echo \"KoolDots: v$DOTS_VERSION\""
-      },
         "break"
     ]
 }
