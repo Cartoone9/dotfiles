@@ -36,9 +36,37 @@ menu — it opens the **real GNOME Settings Wi-Fi panel** as a floating window
 
 **No GNOME? Workaround included:** `waybar/scripts/rofi-wifi.sh` is a
 self-contained nmcli + rofi wifi menu (scan, connect, forget, hidden SSID)
-with no GNOME dependency — point the `custom/network` `on-click` in
-`waybar/config.jsonc` at it instead. `networkmanager_dmenu` (installed by
+with no GNOME dependency. **`install.sh` asks which one you want** — with
+the pros and cons spelled out in the prompt — and wires the Waybar click
+accordingly. If `gnome-control-center` is already on your system (any
+Fedora Workstation base), it picks the GNOME panel automatically since the
+heavy part is already paid for. `networkmanager_dmenu` (installed by
 `install.sh`, themed via `rofi/config-wifi.rasi`) is a third option.
+
+## Footprint
+
+Layered on Workstation, but lean where it counts — at runtime. Measured on
+the live system (RSS, resident processes only):
+
+| | |
+|---|---|
+| Hyprland | 206 MB |
+| swaync | 150 MB |
+| waybar | 63 MB |
+| hyprpolkitagent | 63 MB |
+| pipewire + wireplumber | 46 MB |
+| gnome-keyring | 9 MB |
+| hypridle | 7 MB |
+| swww-daemon | 3 MB |
+| **whole desktop stack** | **~550 MB** |
+
+Exactly **one** GNOME daemon is resident (the keyring). No
+gnome-settings-daemon fleet, no tracker/localsearch indexer, no
+evolution-data-server — none of the dbus-activated background services a
+GNOME session drags in. A stock GNOME session idles well past a gigabyte
+before the first app opens; this sits at half that with the full rice
+running. The GNOME Settings wifi panel costs nothing here: it is not a
+daemon, it only executes while the window is open.
 
 ## Components
 
@@ -67,7 +95,8 @@ Hyprland), `hyprlock`, `hypridle`, `hyprpolkitagent`, `waybar`, `kitty`,
 `wlogout` (Fedora)
 
 **GNOME plumbing** (preinstalled on Fedora Workstation):
-`gnome-control-center` (wifi panel), `gnome-keyring` (secrets/ssh agent)
+`gnome-keyring` (secrets/ssh agent, 3.5 MB), `gnome-control-center`
+(**optional** — only if you pick the GNOME wifi panel at install time)
 
 **Script tooling:**
 `grim`, `slurp`, `swappy`, `wf-recorder`, `wl-clipboard`, `playerctl`,
@@ -95,11 +124,12 @@ git clone https://github.com/Cartoone9/dotfiles ~/dotfiles
 ~/dotfiles/install.sh --links-only  # just the symlinks
 ```
 
-The full bootstrap enables the three COPRs, installs every dependency above
-(including the GNOME pieces if your base lacks them), installs the Nerd Font
-and the zsh stack, then symlinks everything into place — backing up anything
-it would replace to `*.bak`. It links `.gitconfig` too, so edit the identity
-in there if you are not me.
+The full bootstrap asks which **wifi menu** you want (GNOME panel vs rofi
+script — pros and cons shown in the prompt, auto-picks GNOME on a
+Workstation base), enables the three COPRs, installs every dependency
+above, installs the Nerd Font and the zsh stack, then symlinks everything
+into place — backing up anything it would replace to `*.bak`. It links
+`.gitconfig` too, so edit the identity in there if you are not me.
 
 ## Layout
 
