@@ -58,9 +58,11 @@ and the zsh stack, then symlinks everything into place.
 
 > [!NOTE]
 > Anything the installer would replace is backed up to `*.bak`, nothing is
-> deleted. It links `.gitconfig` too, so edit the identity in there if you
-> are not me. The package step is Fedora only (`dnf`); on other distros run
-> `--links-only` and install the [dependency list](#dependencies) yourself.
+> deleted. `.gitconfig` is symlinked along with the rest, and the copy in this
+> repo has my name and email in it — change `user.name` and `user.email` after
+> installing or your commits will be authored as me. The package step is
+> Fedora only (`dnf`); on other distros run `--links-only` and install the
+> [dependency list](#dependencies) yourself.
 
 **Layout:** the repo mirrors `$HOME` — `.zshrc`, `.p10k.zsh`, etc. at the root
 and one directory per app under `.config/`. Everything on the machine is a

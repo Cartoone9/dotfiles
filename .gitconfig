@@ -16,4 +16,4 @@
 [fetch]
 	prune = true
 [core]
-	excludesFile = /home/cartoone/.config/git/ignore
+	excludesFile = ~/.config/git/ignore
