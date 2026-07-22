@@ -1,0 +1,11 @@
+filenames:
+  Dockerfile.dev:
+    icon:
+      glyph: ""
+    filename:
+      foreground: Blue
+  compose.dev.yml:
+    icon:
+      glyph: ""
+    filename:
+      foreground: Yellow
