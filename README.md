@@ -6,7 +6,8 @@ Monokai-themed Hyprland setup on Fedora 44 — daily driven on a ThinkPad P14s G
 
 | | |
 |---|---|
-| ![rofi](assets/rofi.png) | ![swaync](assets/swaync.png) |
+| ![terminal](assets/terminal.png) | ![rofi](assets/rofi.png) |
+| ![swaync](assets/swaync.png) | ![tridactyl](assets/tridactyl.png) |
 
 ![wlogout](assets/wlogout.png)
 
@@ -35,6 +36,8 @@ menu — it opens the **real GNOME Settings Wi-Fi panel** as a floating window
   password dialogs, captive-portal handling — for free
 - ESC closes it (a scoped keybind that only exists while the window is
   focused), and clicking the module again toggles it away
+
+![wifi panel](assets/wifi.png)
 
 **No GNOME? Workaround included:** `waybar/scripts/rofi-wifi.sh` is a
 self-contained nmcli + rofi wifi menu (scan, connect, forget, hidden SSID)
