@@ -1,0 +1,385 @@
+/* swaync colors - matched to waybar grey theme */
+
+@import url("profile-state.css");
+@import url("airplane-state.css");
+@import url("bluetooth-state.css");
+@define-color noti-border-color rgba(255, 255, 255, 0.08);
+@define-color noti-bg rgba(40, 40, 40, 0.55);
+@define-color noti-bg-alt rgba(50, 50, 50, 0.6);
+@define-color noti-bg-hover rgba(60, 60, 60, 0.6);
+@define-color text-color #d4d4d4;
+@define-color text-muted #999999;
+@define-color close-bg #888888;
+
+* {
+    font-family: "JetBrainsMono Nerd Font", "Symbols Nerd Font", monospace;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.control-center .notification-row:focus,
+.control-center .notification-row:hover {
+    opacity: 1;
+    background: transparent;
+}
+
+.notification-row {
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+}
+
+.notification {
+    background: @noti-bg-alt;
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: 1px solid @noti-border-color;
+    box-shadow: none;
+}
+
+.notification-default-action {
+    margin: 0;
+    padding: 0;
+    border-radius: 10px;
+    box-shadow: none;
+    background: transparent;
+}
+
+.close-button {
+    background: transparent;
+    color: @text-muted;
+    text-shadow: none;
+    padding: 0;
+    border-radius: 10px;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+.close-button:hover {
+    box-shadow: none;
+    background: transparent;
+    color: #F92672;
+    transition: all .15s ease-in-out;
+    border: none;
+}
+
+.notification-action {
+    border: none;
+    border-radius: 10px;
+}
+
+.notification-default-action:hover,
+.notification-action:hover {
+    color: @text-color;
+    background: @noti-bg-hover;
+    border-radius: 10px;
+}
+
+.notification-default-action {
+    border-radius: 10px;
+    margin: 0px;
+}
+
+.notification-default-action:not(:only-child) {
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+}
+
+.notification-action:first-child {
+    border-bottom-left-radius: 10px;
+    background: @noti-bg;
+}
+
+.notification-action:last-child {
+    border-bottom-right-radius: 10px;
+    background: @noti-bg-alt;
+}
+
+.inline-reply {
+    margin-top: 8px;
+}
+
+.inline-reply-entry {
+    background: @noti-bg;
+    color: @text-color;
+    caret-color: @text-color;
+    border: none;
+    border-radius: 10px;
+}
+
+.inline-reply-button {
+    font-size: 0.5rem;
+    margin-left: 4px;
+    background: @noti-bg;
+    border: none;
+    border-radius: 10px;
+    color: @text-color;
+}
+
+.inline-reply-button:disabled {
+    background: initial;
+    color: @text-muted;
+    border: none;
+}
+
+.inline-reply-button:hover {
+    background: @noti-bg-hover;
+}
+
+.body-image {
+    margin-top: 6px;
+    color: @text-color;
+    border-radius: 10px;
+}
+
+/* Desaturate notification app icons to match grey theme */
+.notification-icon image,
+.notification image.app-icon,
+.notification .image {
+    -gtk-icon-filter: grayscale(1);
+    opacity: 0.7;
+}
+
+.summary {
+    font-size: 1rem;
+    font-weight: bold;
+    background: transparent;
+    color: #e0e0e0;
+    text-shadow: none;
+}
+
+.time {
+    font-size: 1rem;
+    font-weight: bold;
+    background: transparent;
+    color: @text-muted;
+    text-shadow: none;
+    margin-right: 18px;
+}
+
+.body {
+    font-size: 1rem;
+    font-weight: bold;
+    background: transparent;
+    color: @text-color;
+    text-shadow: none;
+}
+
+.control-center {
+    background: @noti-bg;
+    border: 1px solid @noti-border-color;
+    color: @text-color;
+    border-radius: 10px;
+    padding: 4px;
+}
+
+/* Kill any GTK default shadows on notification elements */
+.control-center .notification {
+    box-shadow: none;
+    background: @noti-bg-alt;
+}
+
+.control-center .notification-row {
+    box-shadow: none;
+    background: transparent;
+}
+
+.control-center-list {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+/* Kill the box wrapping the notification list */
+.control-center-list scrolledwindow,
+.control-center-list scrolledwindow viewport,
+.control-center-list scrolledwindow undershoot,
+.control-center-list scrolledwindow overshoot,
+.control-center-list > * {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.control-center-list-placeholder {
+    opacity: 0.5;
+}
+
+.floating-notifications {
+    background: transparent;
+    margin-top: 25px;
+}
+
+.blank-window {
+    background: transparent;
+}
+
+.widget-title {
+    color: @text-color;
+    background: @noti-bg-alt;
+    padding: 8px 12px;
+    margin: 6px;
+    font-size: 1rem;
+    border-radius: 10px;
+}
+
+.widget-title>button {
+    font-size: 0.75rem;
+    color: @text-muted;
+    border-radius: 10px;
+    background: transparent;
+    border: none;
+}
+
+/* clear button */
+.widget-title>button:hover {
+    background: transparent;
+    color: #F92672;
+}
+
+.widget-dnd {
+    background: @noti-bg-alt;
+    padding: 8px 12px;
+    margin: 6px;
+    border-radius: 10px;
+    font-size: 0.5rem;
+    color: @text-muted;
+}
+
+.widget-dnd>switch {
+    border-radius: 10px;
+    border: none;
+    background: #555555;
+}
+
+.widget-dnd>switch:checked {
+    background: #F92672;
+    border: none;
+}
+
+.widget-dnd>switch slider {
+    background: @noti-bg;
+    border-radius: 10px;
+}
+
+.widget-dnd>switch:checked slider {
+    background: @noti-bg;
+    border-radius: 10px;
+}
+
+.widget-label {
+    margin: 6px;
+}
+
+.widget-label>label {
+    font-size: 1rem;
+    color: @text-color;
+}
+
+.widget-mpris {
+    color: @text-color;
+    background: @noti-bg;
+    padding: 8px 12px;
+    margin: 6px;
+    border-radius: 10px;
+}
+
+.widget-mpris > box > button {
+    border-radius: 10px;
+}
+
+.widget-mpris-player {
+    padding: 6px 8px;
+    margin: 4px;
+}
+
+.widget-mpris-title {
+    font-weight: 100;
+    font-size: 1rem;
+}
+
+.widget-mpris-subtitle {
+    font-size: 0.75rem;
+}
+
+.widget-buttons-grid {
+    font-size: large;
+    color: @text-color;
+    padding: 6px;
+    margin: 6px;
+    border-radius: 10px;
+    background: @noti-bg-alt;
+}
+
+.widget-buttons-grid>flowbox>flowboxchild>button {
+    margin: 1px;
+    background: @noti-bg;
+    border-radius: 10px;
+    color: @text-muted;
+}
+
+/* kill the outer flowboxchild hover highlight */
+.widget-buttons-grid>flowbox>flowboxchild:hover {
+    background: transparent;
+}
+
+/* individual buttons */
+.widget-buttons-grid>flowbox>flowboxchild>button:hover {
+    background: rgba(30, 30, 30, 0.7);
+    color: #F92672;
+}
+
+.widget-menubar>box>.menu-button-bar>button {
+    border: none;
+    background: transparent;
+}
+
+.topbar-buttons>button {
+    border: none;
+    background: transparent;
+}
+
+.widget-volume {
+    background: @noti-bg-alt;
+    padding: 8px 12px;
+    margin: 6px;
+    border-radius: 10px;
+    font-size: x-large;
+    color: @text-color;
+}
+
+.widget-volume>box>button {
+    background: @close-bg;
+    border: none;
+}
+
+.per-app-volume {
+    background-color: @noti-bg;
+    padding: 6px 10px 10px;
+    margin: 0 6px 6px;
+    border-radius: 10px;
+    color: @text-color;
+}
+
+.widget-backlight {
+    background: @noti-bg-alt;
+    padding: 8px 12px;
+    margin: 6px;
+    border-radius: 10px;
+    font-size: x-large;
+    color: @text-color;
+}
+
+/* Volume/backlight slider highlight */
+.widget-volume scale trough highlight,
+.widget-backlight scale trough highlight {
+    background: #F92672;
+    border-radius: 10px;
+}
+
+.widget-volume scale trough,
+.widget-backlight scale trough {
+    background: #3a3a3a;
+    border-radius: 10px;
+    min-height: 6px;
+}
