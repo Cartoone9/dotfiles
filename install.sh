@@ -21,8 +21,9 @@ install_packages() {
 
 	msg "Installing packages"
 	sudo dnf install -y \
-		hyprland hyprlock hypridle waybar kitty swww \
+		hyprland hyprlock hypridle hyprpolkitagent waybar kitty swww \
 		SwayNotificationCenter rofi wlogout \
+		gnome-control-center gnome-keyring \
 		grim slurp swappy wf-recorder wl-clipboard \
 		playerctl brightnessctl pamixer libnotify jq \
 		NetworkManager bluez util-linux python3 \
