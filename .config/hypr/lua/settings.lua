@@ -136,6 +136,8 @@ hl.gesture({
 })
 hl.gesture({ fingers = 4, direction = "down", action = "float" })
 
+-- Machine-specific: this is the Synaptics touchpad on a ThinkPad P14s Gen 5.
+-- The rule is a no-op on any other machine; `hyprctl devices` lists yours.
 hl.device({
   name = "syna8018:00-06cb:ce67-touchpad",
   enabled = true,

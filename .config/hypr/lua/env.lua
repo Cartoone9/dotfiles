@@ -24,4 +24,5 @@ hl.env("XCURSOR_SIZE", "24")
 hl.env("MOZ_ENABLE_WAYLAND", "1")
 hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto") -- auto selects Wayland if possible, X11 otherwise
 hl.env("SSH_AUTH_SOCK", (os.getenv("XDG_RUNTIME_DIR") or "/run/user/1000") .. "/keyring/ssh")
-hl.env("TOUCHPAD_DEVICE", "syna8018:00-06cb:ce67-touchpad")
+-- TOUCHPAD_DEVICE is deliberately not set: TouchPad.sh autodetects the
+-- touchpad from `hyprctl devices`. Export it here to pin a specific device.
