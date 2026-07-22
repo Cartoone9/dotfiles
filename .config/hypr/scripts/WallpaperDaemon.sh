@@ -40,6 +40,12 @@ if [ -z "$wallpaper_path" ] && [ -f "$wallpaper_current" ]; then
   wallpaper_path="$wallpaper_current"
 fi
 
+# Repo wallpaper shipped with the dotfiles
+wallpaper_repo="$HOME/.config/hypr/wallpapers/wallpaper_main.png"
+if [ -z "$wallpaper_path" ] && [ -f "$wallpaper_repo" ]; then
+  wallpaper_path="$wallpaper_repo"
+fi
+
 # Last resort: use cached swww/awww wallpaper paths
 if [ -z "$wallpaper_path" ]; then
   for cache_dir in "$HOME/.cache/awww" "$HOME/.cache/swww"; do

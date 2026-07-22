@@ -79,7 +79,7 @@ it's not a daemon and only runs while the window is open.
 | Terminal | kitty |
 | Lock / idle | hyprlock / hypridle |
 | Logout menu | wlogout, patched for a single hover/focus overlay (`.config/wlogout/patches/`) |
-| Wallpaper | swww, driven by `hypr/scripts/WallpaperDaemon.sh` |
+| Wallpaper | swww (Wayland wallpaper daemon), set at login by `hypr/scripts/WallpaperDaemon.sh`; the wallpaper ships in `.config/hypr/wallpapers/` |
 | Shell | zsh + oh-my-zsh + powerlevel10k, atuin, zoxide, eza, fzf + fd |
 | Theming | Monokai everywhere, accent `#F92672`: GTK 3/4, Qt (qt5ct/qt6ct + Kvantum), tridactyl |
 

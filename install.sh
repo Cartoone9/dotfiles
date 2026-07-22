@@ -143,6 +143,13 @@ install_links() {
 	for d in "$DOT"/.config/*/; do
 		link "${d%/}" "$HOME/.config/$(basename "$d")"
 	done
+
+	# Point the wallpaper chain at the repo image unless one is already set
+	local wp="$HOME/.config/rofi/.current_wallpaper"
+	if [ ! -e "$wp" ]; then
+		ln -s "$DOT/.config/hypr/wallpapers/wallpaper_main.png" "$wp"
+		echo "    linked $wp"
+	fi
 }
 
 # -------------------------------------------------------------------- main ---
