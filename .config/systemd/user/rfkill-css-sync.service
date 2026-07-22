@@ -1,0 +1,12 @@
+[Unit]
+Description=Sync swaync radio button highlights on rfkill events
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStart=%h/.config/hypr/scripts/rfkill-watch.sh
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target
