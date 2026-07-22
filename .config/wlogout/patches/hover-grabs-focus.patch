@@ -1,0 +1,33 @@
+diff --git a/main.c b/main.c
+index 1031af6..005dbbc 100644
+--- a/main.c
++++ b/main.c
+@@ -623,6 +623,16 @@ static void get_monitor(GtkWidget *widget, GdkEventKey *event, gpointer data)
+                                          NULL);
+ }
+ 
++static gboolean grab_focus_on_hover(GtkWidget *widget, GdkEvent *event,
++                                    gpointer user_data)
++{
++    if (!gtk_widget_has_focus(widget))
++    {
++        gtk_widget_grab_focus(widget);
++    }
++    return FALSE;
++}
++
+ static void load_buttons(GtkContainer *container)
+ {
+     GtkWidget *grid = gtk_grid_new();
+@@ -674,6 +684,11 @@ static void load_buttons(GtkContainer *container)
+             }
+             g_signal_connect(but[i][j], "clicked", G_CALLBACK(execute),
+                              buttons[count].action);
++            gtk_widget_add_events(but[i][j], GDK_POINTER_MOTION_MASK);
++            g_signal_connect(but[i][j], "enter-notify-event",
++                             G_CALLBACK(grab_focus_on_hover), NULL);
++            g_signal_connect(but[i][j], "motion-notify-event",
++                             G_CALLBACK(grab_focus_on_hover), NULL);
+             gtk_widget_set_hexpand(but[i][j], TRUE);
+             gtk_widget_set_vexpand(but[i][j], TRUE);
+             gtk_grid_attach(GTK_GRID(grid), but[i][j], i, j, 1, 1);
