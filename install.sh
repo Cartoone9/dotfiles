@@ -11,6 +11,7 @@ DOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LINKS_ONLY=${1:-}
 
 msg() { printf '\033[1;35m==>\033[0m %s\n' "$*"; }
+warn() { printf '\033[1;33m%s\033[0m\n' "$*"; }
 
 # --------------------------------------------------------------- wifi menu ---
 # Clicking Waybar's network module opens a wifi menu. Two implementations ship
@@ -261,3 +262,19 @@ fi
 
 msg "Done. Log out and pick Hyprland at the greeter (units in .config/systemd enable themselves via the tracked wants/ symlinks)."
 msg "Git identity lives in ~/.gitconfig.local — check it before your first commit."
+
+# The config ships tuned to a ThinkPad P14s Gen 5 (AMD). Nothing above adapts
+# it to the running hardware, so say so out loud — the README warning is easy
+# to miss when you just run the script.
+warn ""
+warn "!! This config is tuned to a ThinkPad P14s Gen 5 (AMD). A few spots are"
+warn "!! hardwired to that machine and want editing for yours (see README,"
+warn "!! \"Tuned to this machine\"):"
+warn "!!   - Waybar fan thresholds 2200/3000/4000 rpm and the fan1 sensor label"
+warn "!!       (.config/waybar/scripts/fan-status.sh)"
+warn "!!   - Waybar CPU critical temp 85C (.config/waybar/config.jsonc)"
+warn "!!   - battery/AC sysfs paths BAT0/AC (.config/waybar/scripts/battery-status.sh)"
+warn "!!   - monitor names eDP-1 / DP-2 and their workspace pinning; run"
+warn "!!       hyprctl monitors first (.config/hypr/lua/monitors.lua)"
+warn "!!   - SwayNC backlight device amdgpu_bl1, Intel needs intel_backlight;"
+warn "!!       must match /sys/class/backlight/ (.config/swaync/config.json)"
