@@ -33,7 +33,7 @@
 | Launcher | Rofi 2.0: app launcher, emoji picker, wifi/bluetooth menus |
 | Terminal | kitty |
 | Lock / idle | hyprlock / hypridle |
-| Logout menu | wlogout, patched for a single hover/focus overlay (`.config/wlogout/patches/`) |
+| Logout menu | wlogout, with an optional patch for a single hover/focus overlay (`.config/wlogout/patches/`) |
 | Wallpaper | swww, set at login by `hypr/scripts/WallpaperDaemon.sh` |
 | Shell | zsh + oh-my-zsh + powerlevel10k, atuin, zoxide, eza, fzf + fd |
 | Theming | Monokai everywhere, accent `#F92672`: GTK 3/4, Qt (qt5ct/qt6ct + Kvantum), tridactyl |
@@ -58,8 +58,11 @@ dependencies plus the Nerd Font and the zsh stack, then symlinks everything
 into place.
 
 > [!NOTE]
-> Anything the installer would replace is backed up to `*.bak`, nothing is
-> deleted. The tracked `.gitconfig` carries no identity: it includes
+> Real files the installer would replace are moved aside to `*.bak`. Existing
+> *symlinks* are repointed without a backup, on the assumption they came from
+> a previous run of this script — if you already manage your dotfiles another
+> way, back up `~/.config` yourself first. The tracked `.gitconfig` carries no
+> identity: it includes
 > `~/.gitconfig.local`, which the installer creates from a name and email it
 > asks you for. The package step is Fedora only (`dnf`); on other distros run
 > `--links-only` and install the [dependency list](#dependencies) yourself.
@@ -68,7 +71,12 @@ into place.
 and one directory per app under `.config/`. Everything on the machine is a
 symlink into this repo, so a `git pull` updates the live config. systemd user
 units live in `.config/systemd/user` with their `wants/` enablement symlinks
-tracked, so they come pre-enabled.
+tracked (relative, so they resolve for any user), so they come pre-enabled.
+
+If you answer the SUPER or rofi-wifi prompts, the installer edits
+`binds.lua` and `config.jsonc` in place, so your clone will show those two
+files as modified. That is expected; commit them on your own branch or keep
+them as a local diff.
 
 ## Gallery
 
@@ -94,7 +102,7 @@ tracked, so they come pre-enabled.
 </details>
 
 <details>
-<summary><b>Logout</b> — wlogout with the single hover/focus overlay patch</summary>
+<summary><b>Logout</b> — wlogout with the optional single hover/focus overlay patch</summary>
 
 ![wlogout](assets/wlogout.png)
 
@@ -162,7 +170,8 @@ panel as a floating window (`waybar/scripts/wifi-settings.sh`):
 
 No GNOME? `waybar/scripts/rofi-wifi.sh` is a self-contained nmcli + rofi wifi
 menu (scan, connect, forget, hidden SSID) with no GNOME dependency.
-`install.sh` asks which one you want and wires the Waybar click accordingly.
+`install.sh` asks which one you want, then points both the Waybar click and
+the `mainMod + Z` / `auxMod + grave` keybinds at your choice.
 If `gnome-control-center` is already installed it goes with the GNOME panel
 without asking. `networkmanager_dmenu` (installed by `install.sh`, themed via
 `rofi/config-wifi.rasi`) is a third option.
@@ -211,7 +220,13 @@ buttons from it (a quarter of the screen height, clamped to 120-200 px),
 centered as a row, with a fallback for narrow screens. The
 `hover-grabs-focus` patch makes mouse hover move the keyboard focus, so the
 mouse and the arrow keys share a single highlight overlay instead of showing
-two. Patch and rebuild instructions live in `.config/wlogout/patches/`.
+two.
+
+The patch is the one thing here `install.sh` does not do for you: it installs
+stock `wlogout`, and `Wlogout.sh` prefers `~/.local/bin/wlogout` when it
+exists. Until you build it you get the stock two-highlight behaviour, which
+works fine. Patch and rebuild instructions live in
+`.config/wlogout/patches/`.
 
 ### Native Lua config, current API
 
@@ -329,6 +344,12 @@ the installer), `atuin`, `zoxide`, `eza`, `fzf`, `fd-find`, `lazygit`
 - the wallpaper is [Firewatch](https://www.firewatchgame.com/) artwork by
   Campo Santo
 - [swww](https://github.com/LGFae/swww) for the wallpaper daemon
+- [nickclyde/rofi-bluetooth](https://github.com/nickclyde/rofi-bluetooth):
+  the bluetooth menu, modified here and still GPL-3.0
+- [Catppuccin](https://github.com/catppuccin) for the btop and Qt colour
+  schemes kept alongside the Monokai ones (MIT)
+- the cava shaders under `.config/cava/shaders/` come from
+  [cava](https://github.com/karlstav/cava) upstream (MIT)
 
 ## License
 
