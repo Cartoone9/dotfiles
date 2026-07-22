@@ -1,0 +1,97 @@
+# Theme: Monokai Red
+# Monokai red + grey to match the rest of the setup.
+#   - structural greys  -> monokai-pro "dimmed" ramp (matches nvim)
+#   - accent            -> #F92672 (matches cava / check-repo / p10k)
+#   - graph gradients   -> grey -> red, but tuned for a text-dense TUI.
+#
+# btop colours load numbers, and (with proc_colors/proc_gradient) whole process
+# rows, by the gradient value. A dark->light->red ramp therefore renders every
+# low-load value in an unreadable near-black. So load is encoded by HUE, not
+# darkness: every stop sits at a legible lightness (grey -> rose -> red), so the
+# text stays readable at any load and the red is spread across the upper range.
+
+# Main background — monokai-pro bg. Ignored while theme_background = false
+# (btop falls through to the terminal background for transparency).
+theme[main_bg]="#2d2a2e"
+
+# Main text color — soft neutral light grey (monokai-pro dimmed1)
+theme[main_fg]="#c1c0c0"
+
+# Title color for boxes — bright monokai foreground so headers pop
+theme[title]="#fcfcfa"
+
+# Highlight color for keyboard shortcuts — red accent (was onedark blue)
+theme[hi_fg]="#f92672"
+
+# Background of selected process row — calm neutral grey highlight
+# (visible but understated; selected_fg keeps the text legible on it)
+theme[selected_bg]="#4d4b4e"
+
+# Foreground of selected process row — bright, high contrast on the red
+theme[selected_fg]="#fcfcfa"
+
+# Inactive / disabled text — mid neutral grey (monokai-pro dimmed3)
+theme[inactive_fg]="#727072"
+
+# Text drawn on top of graphs (uptime, net scaling) — muted grey (dimmed2)
+theme[graph_text]="#939293"
+
+# Misc process-box colors (mini cpu graphs, detail mem graph, status) — red accent
+theme[proc_misc]="#f92672"
+
+# Cpu box outline — neutral grey (monokai-pro dimmed4), no blue
+theme[cpu_box]="#5b595c"
+
+# Memory / disks box outline
+theme[mem_box]="#5b595c"
+
+# Net up/down box outline
+theme[net_box]="#5b595c"
+
+# Processes box outline
+theme[proc_box]="#5b595c"
+
+# Box divider line and small boxes line color
+theme[div_line]="#5b595c"
+
+# --- Graph & meter gradients: grey -> rose -> red, readable at every level ---
+
+# Temperature graph
+theme[temp_start]="#969696"
+theme[temp_mid]="#d1708a"
+theme[temp_end]="#f92672"
+
+# CPU graph
+theme[cpu_start]="#969696"
+theme[cpu_mid]="#d1708a"
+theme[cpu_end]="#f92672"
+
+# Mem/Disk free meter
+theme[free_start]="#969696"
+theme[free_mid]="#d1708a"
+theme[free_end]="#f92672"
+
+# Mem/Disk cached meter
+theme[cached_start]="#969696"
+theme[cached_mid]="#d1708a"
+theme[cached_end]="#f92672"
+
+# Mem/Disk available meter
+theme[available_start]="#969696"
+theme[available_mid]="#d1708a"
+theme[available_end]="#f92672"
+
+# Mem/Disk used meter
+theme[used_start]="#969696"
+theme[used_mid]="#d1708a"
+theme[used_end]="#f92672"
+
+# Download graph
+theme[download_start]="#969696"
+theme[download_mid]="#d1708a"
+theme[download_end]="#f92672"
+
+# Upload graph
+theme[upload_start]="#969696"
+theme[upload_mid]="#d1708a"
+theme[upload_end]="#f92672"
