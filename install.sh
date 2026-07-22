@@ -124,6 +124,7 @@ install_packages() {
 		grim slurp swappy wf-recorder wl-clipboard \
 		playerctl brightnessctl pamixer libnotify jq \
 		NetworkManager bluez util-linux python3 \
+		lm_sensors nmap-ncat \
 		zsh eza zoxide fzf fd-find atuin lazygit \
 		cava btop htop mpv fastfetch \
 		kvantum qt5ct qt6ct

@@ -264,7 +264,8 @@ covering GNOME apps (Nautilus, Loupe, Calculator, File Roller...), and GNOME
 Settings for the wifi menu.
 
 **You don't need GNOME to use these dotfiles.** The only GNOME package the
-installer always pulls is `gnome-keyring` (3.5 MB). `gnome-control-center` is
+installer always pulls is `gnome-keyring` (3.5 MB on disk, 9 MB resident — it
+runs the secret service and ssh agent). `gnome-control-center` is
 optional: the installer asks if you want it for the wifi menu, and skips it if
 you pick the rofi alternative. The window rules for GNOME apps simply never
 match if the apps aren't installed. Any base works, Workstation is just what
@@ -290,7 +291,14 @@ if you pick the GNOME wifi panel at install time)
 **Script tooling:**
 `grim`, `slurp`, `swappy`, `wf-recorder`, `wl-clipboard`, `playerctl`,
 `brightnessctl`, `pamixer`, `libnotify`, `jq`, `NetworkManager`, `bluez`,
-`util-linux` (rfkill), `python3`
+`util-linux` (rfkill), `python3`, `lm_sensors` (the fan module reads
+`sensors`), `nmap-ncat` (the hidden-window module reads Hyprland's
+socket2 with `ncat`)
+
+**Not installed, but assumed by one bind:** `mainMod + E` opens
+`nautilus`. It ships with Fedora Workstation; on another base either
+install it or point the `files` variable at the top of
+`.config/hypr/lua/binds.lua` at the file manager you use.
 
 **Shell & CLI:**
 `zsh` (oh-my-zsh, powerlevel10k and zsh-syntax-highlighting are cloned by
