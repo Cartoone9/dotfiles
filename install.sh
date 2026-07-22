@@ -68,6 +68,38 @@ choose_main_mod() {
 	fi
 }
 
+# ------------------------------------------------------------ git identity ---
+# The tracked .gitconfig includes ~/.gitconfig.local for [user], so this repo
+# carries no identity. Create that file here, prompting when we can.
+setup_git_identity() {
+	local f="$HOME/.gitconfig.local"
+	if [ -e "$f" ]; then
+		msg "Keeping your existing ~/.gitconfig.local"
+		return
+	fi
+
+	local name='' email=''
+	if [ -t 0 ] && [ "$LINKS_ONLY" != --links-only ]; then
+		echo
+		echo "Git identity — written to ~/.gitconfig.local, which stays out of"
+		echo "this repo. Leave blank to fill it in yourself later."
+		echo
+		read -rp "  Name:  " name
+		read -rp "  Email: " email
+	fi
+
+	local header='# Git identity for this machine. Not tracked by the dotfiles repo.'
+	if [ -n "$name" ] || [ -n "$email" ]; then
+		printf '%s\n[user]\n\tname = %s\n\temail = %s\n' \
+			"$header" "$name" "$email" >"$f"
+		msg "Wrote ~/.gitconfig.local for $name <$email>"
+	else
+		printf '%s\n# Fill these in — git will not commit until you do.\n[user]\n\tname =\n\temail =\n' \
+			"$header" >"$f"
+		msg "Wrote a ~/.gitconfig.local template — fill in [user] before committing"
+	fi
+}
+
 wire_wifi_menu() {
 	if [ "$WIFI_MENU" = rofi ]; then
 		msg "Wiring the Waybar network click to rofi-wifi.sh"
@@ -180,6 +212,7 @@ if [ "$LINKS_ONLY" != --links-only ]; then
 	install_zsh
 fi
 install_links
+setup_git_identity
 [ "$LINKS_ONLY" = --links-only ] || wire_wifi_menu
 
 if systemctl --user is-system-running &>/dev/null; then
@@ -188,4 +221,4 @@ if systemctl --user is-system-running &>/dev/null; then
 fi
 
 msg "Done. Log out and pick Hyprland at the greeter (units in .config/systemd enable themselves via the tracked wants/ symlinks)."
-msg "Reminder: .gitconfig carries my identity — edit [user] if you are not me."
+msg "Git identity lives in ~/.gitconfig.local — check it before your first commit."
