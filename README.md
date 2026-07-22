@@ -1,6 +1,18 @@
 # dotfiles
 
+![last commit](https://img.shields.io/github/last-commit/Cartoone9/dotfiles?style=flat-square&labelColor=272822&color=F92672)
+![repo size](https://img.shields.io/github/repo-size/Cartoone9/dotfiles?style=flat-square&labelColor=272822&color=F92672)
+![license](https://img.shields.io/badge/license-MIT-F92672?style=flat-square&labelColor=272822)
+![fedora](https://img.shields.io/badge/Fedora-44-F92672?style=flat-square&labelColor=272822&logo=fedora&logoColor=white)
+
 Monokai-themed Hyprland setup on Fedora 44, daily driven on a ThinkPad P14s Gen 5 (AMD).
+
+[Install](#install) ·
+[Keybinds](#keybinds) ·
+[The wifi trick](#the-wifi-menu-trick) ·
+[Notable details](#notable-details) ·
+[Dependencies](#dependencies) ·
+[Credits](#credits)
 
 <!-- intro video goes here -->
 
@@ -115,6 +127,29 @@ tridactyl with the Monokai theme from `.config/tridactyl/themes`:
 
 ![tridactyl](assets/tridactyl.png)
 
+## Keybinds
+
+`mainMod` is **ALT**. The essentials:
+
+| Keys | Action |
+|---|---|
+| `ALT + Space` | app launcher (rofi) |
+| `ALT + Q` | close window |
+| `ALT + F` | hide other windows (maximize toggle) |
+| `ALT + SHIFT + F` | fullscreen |
+| `ALT + Tab` | cycle windows |
+| `ALT + Z` | wifi menu |
+| `SUPER + Escape` | power menu (wlogout) |
+| `SUPER + Backspace` | lock screen |
+| `SUPER + Shift` | area screenshot (swappy) |
+| `SUPER + E` | emoji picker |
+| `SUPER + 1 / 2 / 3` | layout: dwindle / master / scrolling |
+| `SUPER + H` | searchable list of all keybinds (rofi) |
+
+There are about a hundred binds total. `SUPER + H` opens a searchable rofi
+menu generated from `binds.lua` descriptions, so the config itself is the
+documentation.
+
 ## Notable details
 
 Things this config does that you won't find in the average Hyprland starter.
@@ -179,9 +214,12 @@ being an int on current Hyprland and a bool on older ones.
 Everything below is what the configs and scripts actually call. `install.sh`
 installs all of it.
 
+> [!IMPORTANT]
+> The Hyprland config is written in Lua and needs the Lua config provider
+> build from COPR `sdegler/hyprland`. It will not parse on stock Hyprland.
+
 **Core session** (COPR `sdegler/hyprland` unless noted):
-`hyprland` (Lua provider build, the config will not parse on stock
-Hyprland), `hyprlock`, `hypridle`, `hyprpolkitagent`, `waybar`, `kitty`,
+`hyprland`, `hyprlock`, `hypridle`, `hyprpolkitagent`, `waybar`, `kitty`,
 `swww`, `SwayNotificationCenter` (COPR `erikreider`), `rofi` (2.0, Fedora),
 `wlogout` (Fedora)
 
@@ -219,9 +257,13 @@ git clone https://github.com/Cartoone9/dotfiles ~/dotfiles
 The full bootstrap asks which wifi menu you want (GNOME panel or rofi
 script, the prompt explains the trade-off), enables the three COPRs,
 installs the dependencies plus the Nerd Font and the zsh stack, then
-symlinks everything into place. Anything it would replace is backed up to
-`*.bak`. It links `.gitconfig` too, so edit the identity in there if you
-are not me.
+symlinks everything into place.
+
+> [!NOTE]
+> Anything the installer would replace is backed up to `*.bak`, nothing is
+> deleted. It links `.gitconfig` too, so edit the identity in there if you
+> are not me. The package step is Fedora only (`dnf`); on other distros run
+> `--links-only` and install the dependency list yourself.
 
 ## Layout
 
@@ -231,6 +273,22 @@ into this repo, so a `git pull` updates the live config. systemd user units
 live in `.config/systemd/user` with their `wants/` enablement symlinks
 tracked, so they come pre-enabled.
 
+## Credits
+
+- [JaKooLit's Hyprland-Dots](https://github.com/JaKooLit/Hyprland-Dots):
+  this config started from the KooL dots long ago. Most of it has been
+  rewritten or replaced since, but several scripts and the general
+  structure trace back there
+- [SherLock707](https://github.com/SherLock707): original hypridle config
+  this one grew from
+- [ArtsyMacaw's wlogout](https://github.com/ArtsyMacaw/wlogout): the logout
+  menu, patched here (see `.config/wlogout/patches/`)
+- the wallpaper is [Firewatch](https://www.firewatchgame.com/) artwork by
+  Campo Santo
+- [swww](https://github.com/LGFae/swww) for the wallpaper daemon
+
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) for the repo. Some scripts under `.config/hypr/scripts/`
+came from the KooL dots and keep their upstream GPL-3.0 headers; those
+files stay GPL-3.0.
