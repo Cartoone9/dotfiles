@@ -227,6 +227,18 @@ install_links() {
 		ln -s "$DOT/.config/hypr/wallpapers/wallpaper_main.png" "$wp"
 		echo "    linked $wp"
 	fi
+
+	# swaync/style.css @imports these three, and an unresolved GTK CSS import
+	# breaks the whole stylesheet. They are runtime state (gitignored), so a
+	# fresh clone has to seed them empty; the toggles fill them in on use.
+	local sn="$DOT/.config/swaync"
+	for state in profile-state airplane-state bluetooth-state; do
+		[ -e "$sn/$state.css" ] || {
+			printf '/* Written at runtime. Empty until the matching toggle is used. */\n' \
+				>"$sn/$state.css"
+			echo "    seeded $sn/$state.css"
+		}
+	done
 }
 
 # -------------------------------------------------------------------- main ---

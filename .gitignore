@@ -5,6 +5,11 @@
 # wallpaper is currently set on this machine.
 .config/rofi/.current_wallpaper
 
+# swaync widget highlights, rewritten by AirplaneWriteCSS.sh,
+# PowerProfileWriteCSS.sh and update-bluetooth-state.sh on every toggle.
+# install.sh seeds them, since style.css @imports all three.
+.config/swaync/*-state.css
+
 # install.sh backs up what it would replace to *.bak
 *.bak
 
