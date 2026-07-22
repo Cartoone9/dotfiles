@@ -1,0 +1,65 @@
+window {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 14pt;
+    color: #d4d4d4;
+    background-color: rgba(40, 40, 40, 0.5);
+}
+button, label {
+    font-weight: 300;
+}
+button {
+    min-width: 160px;
+    min-height: 160px;
+    background-repeat: no-repeat;
+    background-position: center 38%;
+    background-size: 35% 35%;
+    background-color: rgba(255, 255, 255, 0.03);
+    transition: all 0.3s ease;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    outline-style: none;
+    margin: 10px;
+}
+button:focus {
+    background-color: rgba(255, 255, 255, 0.06);
+    background-size: 38% 38%;
+    border: 1px solid #F92672;
+    outline-style: none;
+}
+button span {
+    font-size: 0.9em;
+    color: #888888;
+}
+button:focus span {
+    color: #d4d4d4;
+}
+#lock {
+    background-image: image(url("./icons/lock.png"));
+}
+#lock:focus {
+    background-image: image(url("./icons/lock-hover.png"));
+}
+#logout {
+    background-image: image(url("./icons/logout.png"));
+}
+#logout:focus {
+    background-image: image(url("./icons/logout-hover.png"));
+}
+#suspend {
+    background-image: image(url("./icons/sleep.png"));
+}
+#suspend:focus {
+    background-image: image(url("./icons/sleep-hover.png"));
+}
+#shutdown {
+    background-image: image(url("./icons/power.png"));
+}
+#shutdown:focus {
+    background-image: image(url("./icons/power-hover.png"));
+}
+#reboot {
+    background-image: image(url("./icons/restart.png"));
+}
+#reboot:focus {
+    background-image: image(url("./icons/restart-hover.png"));
+}
