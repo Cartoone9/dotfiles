@@ -52,17 +52,17 @@ git clone https://github.com/Cartoone9/dotfiles ~/dotfiles
 ```
 
 The full bootstrap asks which wifi menu you want (GNOME panel or rofi script,
-the prompt explains the trade-off) and which main modifier you prefer (ALT or
-SUPER), enables the three COPRs, installs the dependencies plus the Nerd Font
-and the zsh stack, then symlinks everything into place.
+the prompt explains the trade-off), which main modifier you prefer (ALT or
+SUPER), and your git name and email, enables the three COPRs, installs the
+dependencies plus the Nerd Font and the zsh stack, then symlinks everything
+into place.
 
 > [!NOTE]
 > Anything the installer would replace is backed up to `*.bak`, nothing is
-> deleted. `.gitconfig` is symlinked along with the rest, and the copy in this
-> repo has my name and email in it — change `user.name` and `user.email` after
-> installing or your commits will be authored as me. The package step is
-> Fedora only (`dnf`); on other distros run `--links-only` and install the
-> [dependency list](#dependencies) yourself.
+> deleted. The tracked `.gitconfig` carries no identity: it includes
+> `~/.gitconfig.local`, which the installer creates from a name and email it
+> asks you for. The package step is Fedora only (`dnf`); on other distros run
+> `--links-only` and install the [dependency list](#dependencies) yourself.
 
 **Layout:** the repo mirrors `$HOME` — `.zshrc`, `.p10k.zsh`, etc. at the root
 and one directory per app under `.config/`. Everything on the machine is a

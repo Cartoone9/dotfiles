@@ -1,6 +1,9 @@
-[user]
-	email = contact@cartoone.dev
-	name = cartoone
+# Identity lives in ~/.gitconfig.local, which is not tracked in this repo.
+# A missing include is silently ignored by git, so if that file doesn't exist
+# git will refuse to commit until you tell it who you are — which beats
+# authoring your commits under someone else's name.
+[include]
+	path = ~/.gitconfig.local
 [init]
 	defaultBranch = main
 [diff]
