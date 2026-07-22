@@ -7,12 +7,18 @@ Monokai-themed Hyprland setup on Fedora 44 — daily driven on a ThinkPad P14s G
 ## Origin: Fedora Workstation → Hyprland
 
 This config was not built on a minimal install — it is Hyprland layered on top
-of **Fedora Workstation**, and it leans on the GNOME plumbing that base
-provides: `gnome-keyring` (secrets/ssh, started in `autostart.lua`),
+of **Fedora Workstation**, and it takes advantage of the GNOME plumbing that
+base provides: `gnome-keyring` (secrets/ssh, started in `autostart.lua`),
 GNOME apps covered by the window rules (Nautilus, Loupe, Calculator,
 File Roller…), and most notably GNOME Settings for the wifi menu (below).
-The installer pulls in the GNOME pieces the config actually depends on, so it
-also works from a non-Workstation base — but Workstation is the tested path.
+
+**GNOME is not required to use these dotfiles.** The only GNOME package the
+installer always pulls is the tiny `gnome-keyring`; the heavy piece,
+`gnome-control-center`, is **optional** — the installer asks whether you want
+it for the wifi menu or the zero-dependency rofi alternative, and only
+installs it if you pick the GNOME panel (or already have it). The window
+rules for GNOME apps are inert if those apps are absent. Any base works;
+Workstation is simply the tested path.
 
 ## The wifi menu trick
 
