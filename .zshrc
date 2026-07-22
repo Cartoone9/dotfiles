@@ -5,7 +5,6 @@ printf '\n%.0s' {1..$LINES}
 # PATH
 # ======================================================================================
 export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
-export PATH="$HOME/.local/funcheck/host:$PATH"
 export PATH="/usr/local/go/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 
@@ -28,11 +27,7 @@ zstyle ':omz:update' mode disabled
 # ======================================================================================
 # Editor
 # ======================================================================================
-if [[ -n $SSH_CONNECTION ]]; then
-	export EDITOR='vim'
-else
-	export EDITOR='nvim'
-fi
+export EDITOR='nvim'
 
 # ======================================================================================
 # Aliases
@@ -45,12 +40,9 @@ alias gp='git push'
 alias gf='git fetch && git status'
 alias gd="git difftool --no-symlinks --dir-diff"
 alias gpu='git pull'
-alias updt='brew update'
 alias update='topgrade && echo && check'
 alias vi='nvim'
 alias ccw='cc -Wall -Werror -Wextra'
-alias norm='norminette'
-alias bat='batcat'
 alias cl='printf "\n%.0s" {1..$LINES}'
 alias cls='cl && ls'
 alias cll='cl && ll'
@@ -106,30 +98,6 @@ function la() {
 if [ -f "$HOME/.profile" ]; then
 	source "$HOME/.profile"
 fi
-
-# ======================================================================================
-# NVM (lazy load)
-# ======================================================================================
-export NVM_DIR="$HOME/.nvm"
-
-zsh_nvm_lazy_load() {
-	# Cleanup the placeholder functions
-	unset -f nvm node npm npx yarn pnpm 2>/dev/null
-
-	# Load NVM
-	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
-	# Load NVM bash completion (optional, slightly slower)
-	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-}
-
-# Create placeholder functions that trigger the loader
-nvm()  { zsh_nvm_lazy_load; nvm "$@"; }
-node() { zsh_nvm_lazy_load; node "$@"; }
-npm()  { zsh_nvm_lazy_load; npm "$@"; }
-npx()  { zsh_nvm_lazy_load; npx "$@"; }
-yarn() { zsh_nvm_lazy_load; yarn "$@"; }
-pnpm() { zsh_nvm_lazy_load; pnpm "$@"; }
 
 # ======================================================================================
 # Cached `<tool> init zsh` (atuin, zoxide)
