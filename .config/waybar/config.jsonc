@@ -1,0 +1,111 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 36,
+    "margin-top": 10,
+    "margin-left": 10,
+    "margin-right": 10,
+    "spacing": 0,
+
+    "modules-left": ["hyprland/workspaces", "custom/hidden"],
+    "modules-center": ["clock"],
+    "modules-right": ["tray", "custom/sep", "memory", "cpu", "temperature", "custom/fan", "disk", "custom/sep2", "custom/network", "custom/battery", "custom/power"],
+
+    "hyprland/workspaces": {
+        "format": "{id}",
+        "on-click": "activate",
+        "sort-by-number": true,
+        "active-only": false,
+        "persistent-workspaces": {
+            "*": 4
+        }
+    },
+
+    "custom/hidden": {
+        "exec": "~/.config/waybar/scripts/hidden-window.sh",
+        "return-type": "json",
+        "restart-interval": 5,
+        "on-click": "hyprctl dispatch 'hl.dsp.window.cycle_next({ next = true })'"
+    },
+
+    "hyprland/window": {
+        "format": "{class}",
+        "max-length": 20,
+        "separate-outputs": true
+    },
+
+    "clock": {
+        "format": "{:%a %d %b   %H:%M:%S}",
+        "interval": 1,
+        "tooltip-format": "<big>{:%A %d %B %Y}</big>\n<tt>{calendar}</tt>",
+        "on-click": "swaync-client -t -sw"
+    },
+
+    "tray": {
+        "icon-size": 18,
+        "spacing": 8
+    },
+
+    "memory": {
+        "format": "<span color='#888888'>RAM</span> {percentage:02}%",
+        "tooltip-format": "{used:0.1f}G / {total:0.1f}G ({percentage:02}%)",
+        "interval": 1
+    },
+
+    "cpu": {
+        "format": "<span color='#888888'>CPU</span> {usage:02}%",
+        "tooltip-format": "CPU: {usage:02}%\n{avg_frequency} GHz",
+        "interval": 1
+    },
+
+    "temperature": {
+        "format": "<span color='#888888'>TEMP</span> {temperatureC:02}°C",
+        "critical-threshold": 85,
+        "format-critical": "<span color='#888888'>TEMP</span> {temperatureC:02}°C",
+        "tooltip-format": "CPU Temp: {temperatureC:02}°C",
+        "interval": 1
+    },
+
+    "custom/fan": {
+        "exec": "~/.config/waybar/scripts/fan-status.sh",
+        "return-type": "json",
+        "interval": 1,
+        "tooltip": false
+    },
+
+    "disk": {
+        "format": "<span color='#888888'>DISK</span> {free}",
+        "tooltip-format": "{path}: {free} free / {total}",
+        "paths": ["/"],
+        "interval": 30
+    },
+
+    "custom/network": {
+        "exec": "~/.config/waybar/scripts/network-vpn.sh",
+        "return-type": "json",
+        "restart-interval": 5,
+        "on-click": "~/.config/waybar/scripts/wifi-settings.sh"
+    },
+
+    "custom/battery": {
+        "exec": "~/.config/waybar/scripts/battery-status.sh",
+        "return-type": "json",
+        "restart-interval": 5
+    },
+
+    "custom/power": {
+        "format": "⏻",
+        "on-click": "~/.config/hypr/scripts/Wlogout.sh",
+        "tooltip": false
+    },
+
+    "custom/sep": {
+        "format": "|",
+        "tooltip": false
+    },
+
+    "custom/sep2": {
+        "format": "|",
+        "tooltip": false
+    }
+}
