@@ -308,7 +308,10 @@ if you pick the GNOME wifi panel at install time)
 `brightnessctl`, `pamixer`, `libnotify`, `jq`, `NetworkManager`, `bluez`,
 `util-linux` (rfkill), `python3`, `lm_sensors` (the fan module reads
 `sensors`), `nmap-ncat` (the hidden-window module reads Hyprland's
-socket2 with `ncat`)
+socket2 with `ncat`), `NetworkManager-tui` (the rofi wifi menu's "open
+nmtui" entry), `tuned-ppd` (provides the `net.hadess.PowerProfiles` D-Bus
+service the SwayNC power-profile buttons drive; `power-profiles-daemon`
+works too, but the two conflict, so install exactly one)
 
 **Not installed, but assumed by one bind:** `mainMod + E` opens
 `nautilus`. It ships with Fedora Workstation; on another base either
@@ -328,6 +331,10 @@ the installer), `atuin`, `zoxide`, `eza`, `fzf`, `fd-find`, `lazygit`
 
 **Font:** JetBrainsMono Nerd Font (installer downloads it to
 `~/.local/share/fonts`)
+
+**Cursor:** Bibata-Modern-Ice, which `lua/env.lua` sets as the hyprcursor
+and XCursor theme. Not packaged for Fedora, so the installer downloads it
+to `~/.icons`
 
 </details>
 

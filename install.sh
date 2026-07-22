@@ -127,8 +127,8 @@ install_packages() {
 		SwayNotificationCenter rofi wlogout gnome-keyring \
 		grim slurp swappy wf-recorder wl-clipboard \
 		playerctl brightnessctl pamixer libnotify jq \
-		NetworkManager bluez util-linux python3 \
-		lm_sensors nmap-ncat \
+		NetworkManager NetworkManager-tui bluez util-linux python3 \
+		lm_sensors nmap-ncat tuned-ppd \
 		zsh eza zoxide fzf fd-find atuin lazygit \
 		cava btop htop mpv fastfetch \
 		kvantum qt5ct qt6ct
@@ -162,6 +162,21 @@ install_fonts() {
 	curl -fsSL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz |
 		tar -xJ -C "$dir"
 	fc-cache -f "$dir"
+}
+
+# Bibata is what lua/env.lua points HYPRCURSOR_THEME/XCURSOR_THEME at, and it
+# is not packaged for Fedora. Without it the cursor silently falls back.
+install_cursor() {
+	local dir="$HOME/.icons"
+	if [ -d "$dir/Bibata-Modern-Ice" ]; then
+		msg "Bibata-Modern-Ice cursor already installed"
+		return
+	fi
+	msg "Installing Bibata-Modern-Ice cursor theme"
+	mkdir -p "$dir"
+	curl -fsSL https://github.com/ful1e5/Bibata_Cursor/releases/latest/download/Bibata-Modern-Ice.tar.xz |
+		tar -xJ -C "$dir" ||
+		msg "Cursor download failed, falling back to the system default"
 }
 
 # --------------------------------------------------------------------- zsh ---
@@ -220,6 +235,7 @@ if [ "$LINKS_ONLY" != --links-only ]; then
 	choose_main_mod
 	install_packages
 	install_fonts
+	install_cursor
 	install_zsh
 fi
 install_links
