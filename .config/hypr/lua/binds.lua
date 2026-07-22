@@ -5,7 +5,7 @@ local mainMod = "ALT" -- main modifier; set to "SUPER" if you prefer, helper bin
 local auxMod = (mainMod == "SUPER") and "ALT" or "SUPER" -- secondary mod for helper binds
 local scriptsDir = home .. "/.config/hypr/scripts"
 local term = "kitty"
-local files = "nautilus --new-window"
+local files = "nautilus --new-window" -- file manager for mainMod+E; swap for thunar, dolphin, nemo...
 
 local function bind(combo, dispatcher, description, opts)
   opts = opts or {}
