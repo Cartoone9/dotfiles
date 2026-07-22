@@ -1,0 +1,6 @@
+# Runtime state (current wallpaper cache used by hyprlock/WallpaperDaemon)
+wallpaper_effects/*
+!wallpaper_effects/.gitkeep
+
+# Local tooling
+.claude/

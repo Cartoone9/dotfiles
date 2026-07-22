@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -u
+
+BATTERY="/sys/class/power_supply/BAT0"
+STATE_DIR="$HOME/.cache/battery-alert"
+
+mkdir -p "$STATE_DIR"
+
+capacity="$(cat "$BATTERY/capacity")"
+status="$(cat "$BATTERY/status")"
+
+# Only alert while discharging
+if [ "$status" != "Discharging" ]; then
+    rm -f "$STATE_DIR/notified-20" "$STATE_DIR/notified-10"
+    exit 0
+fi
+
+notify_level() {
+    local level="$1"
+    local file="$STATE_DIR/notified-$level"
+
+    if [ "$capacity" -le "$level" ] && [ ! -f "$file" ]; then
+        notify-send -u critical \
+            "Battery low" \
+            "Battery is at ${capacity}%"
+
+        touch "$file"
+    fi
+}
+
+notify_level 20
+notify_level 10
