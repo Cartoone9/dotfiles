@@ -12,6 +12,53 @@ LINKS_ONLY=${1:-}
 
 msg() { printf '\033[1;35m==>\033[0m %s\n' "$*"; }
 
+# --------------------------------------------------------------- wifi menu ---
+# Clicking Waybar's network module opens a wifi menu. Two implementations ship
+# with this repo; pick one at install time (see README, "The wifi menu trick").
+WIFI_MENU=rofi
+
+choose_wifi_menu() {
+	if command -v gnome-control-center >/dev/null; then
+		msg "GNOME Settings detected (Workstation base) — using it for the wifi menu"
+		WIFI_MENU=gnome
+		return
+	fi
+	if [ ! -t 0 ]; then
+		msg "Non-interactive install — defaulting to the rofi wifi menu (no GNOME deps)"
+		return
+	fi
+	cat <<-'EOF'
+
+	Wifi menu — clicking the Waybar network module can open either:
+
+	  1) GNOME Settings Wi-Fi panel (the trick this repo documents)
+	       + full native UI: live rescan, password dialogs, captive portals,
+	         enterprise auth — everything NetworkManager can do
+	       + zero runtime cost: nothing resident, it only runs while open
+	       - installs gnome-control-center: ~24 MB package plus GNOME libs,
+	         on the order of ~120 MB on a minimal base
+
+	  2) rofi wifi menu (pure nmcli + rofi, ships in this repo)
+	       + zero extra dependencies, matches the rice's look
+	       - basic by design: scan/connect/forget/hidden SSID only — no
+	         captive-portal or enterprise-auth dialogs
+
+	EOF
+	local a
+	read -rp "Pick your wifi menu [1=GNOME panel / 2=rofi] (default 2): " a
+	if [ "${a:-2}" = 1 ]; then WIFI_MENU=gnome; else WIFI_MENU=rofi; fi
+}
+
+wire_wifi_menu() {
+	if [ "$WIFI_MENU" = rofi ]; then
+		msg "Wiring the Waybar network click to rofi-wifi.sh"
+		sed -i 's|scripts/wifi-settings.sh|scripts/rofi-wifi.sh|' \
+			"$DOT/.config/waybar/config.jsonc"
+	else
+		msg "Keeping the GNOME Settings wifi panel (repo default)"
+	fi
+}
+
 # ---------------------------------------------------------------- packages ---
 install_packages() {
 	msg "Enabling COPRs (Hyprland Lua build, SwayNC, lazygit)"
@@ -22,14 +69,18 @@ install_packages() {
 	msg "Installing packages"
 	sudo dnf install -y \
 		hyprland hyprlock hypridle hyprpolkitagent waybar kitty swww \
-		SwayNotificationCenter rofi wlogout \
-		gnome-control-center gnome-keyring \
+		SwayNotificationCenter rofi wlogout gnome-keyring \
 		grim slurp swappy wf-recorder wl-clipboard \
 		playerctl brightnessctl pamixer libnotify jq \
 		NetworkManager bluez util-linux python3 \
 		zsh eza zoxide fzf fd-find atuin lazygit \
 		cava btop htop mpv fastfetch \
 		kvantum qt5ct qt6ct
+
+	if [ "$WIFI_MENU" = gnome ] && ! command -v gnome-control-center >/dev/null; then
+		msg "Installing gnome-control-center for the wifi panel"
+		sudo dnf install -y gnome-control-center
+	fi
 
 	# networkmanager-dmenu is not packaged for Fedora — it is a single script
 	if ! command -v networkmanager_dmenu >/dev/null; then
@@ -96,11 +147,13 @@ install_links() {
 
 # -------------------------------------------------------------------- main ---
 if [ "$LINKS_ONLY" != --links-only ]; then
+	choose_wifi_menu
 	install_packages
 	install_fonts
 	install_zsh
 fi
 install_links
+[ "$LINKS_ONLY" = --links-only ] || wire_wifi_menu
 
 if systemctl --user is-system-running &>/dev/null; then
 	msg "Reloading systemd user units"
