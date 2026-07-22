@@ -92,7 +92,7 @@ bind(auxMod .. " + F6", exec(scriptsDir .. "/ScreenShot.sh --now"), "screenshot"
 bind(auxMod .. " + SHIFT + F6", exec(scriptsDir .. "/ScreenShot.sh --area"), "screenshot (area)")
 bind(auxMod .. " + CTRL + F6", exec(scriptsDir .. "/ScreenShot.sh --in5"), "screenshot (5 secs delay)")
 bind("SUPER + ALT + F6", exec(scriptsDir .. "/ScreenShot.sh --in10"), "screenshot (10 secs delay)")
-bind("ALT + F6", exec(scriptsDir .. "/ScreenShot.sh --active"), "screenshot (active window only)")
+bind(mainMod .. " + F6", exec(scriptsDir .. "/ScreenShot.sh --active"), "screenshot (active window only)")
 
 -- FOCUS / WINDOW MANAGEMENT
 bind(mainMod .. " + H", hl.dsp.focus({ direction = dir("l") }), "focus left")
