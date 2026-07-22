@@ -1,6 +1,10 @@
 [Unit]
 Description=Tailscale System Tray
 After=systemd.service
+# Optional: tailscale is not part of this rice and install.sh does not pull
+# it in. Without this the unit is enabled for everyone and fails on login
+# with a missing ExecStart; with it, it just stays inactive.
+ConditionPathExists=/usr/bin/tailscale
 
 [Service]
 Type=simple

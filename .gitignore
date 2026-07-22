@@ -1,3 +1,12 @@
+# Every .config subdirectory here is symlinked into place, so anything an app
+# writes at runtime lands inside this repo. Keep that out of git.
+
 # Runtime state: written by the wallpaper scripts, points at whatever
 # wallpaper is currently set on this machine.
 .config/rofi/.current_wallpaper
+
+# install.sh backs up what it would replace to *.bak
+*.bak
+
+# Local tooling
+.claude/

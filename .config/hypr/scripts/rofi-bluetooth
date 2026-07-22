@@ -2,6 +2,10 @@
 #
 # rofi-bluetooth improved
 #
+# Derived from nickclyde/rofi-bluetooth (https://github.com/nickclyde/rofi-bluetooth)
+# Copyright (C) Nick Clyde, licensed under the GNU General Public License v3.0.
+# This modified version stays GPL-3.0; see https://www.gnu.org/licenses/gpl-3.0.html
+#
 # Depends on:
 #   rofi
 #   bluez / bluetoothctl
