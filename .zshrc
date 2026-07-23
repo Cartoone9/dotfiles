@@ -30,6 +30,13 @@ zstyle ':omz:update' mode disabled
 export EDITOR='nvim'
 
 # ======================================================================================
+# Environment
+# ======================================================================================
+# check-repo config lives in the private perso-check-repo repo
+export CHECK_REPOS_CONFIG=~/scripts/perso-check-repo/repo_targets.json
+export CHECK_REPOS_SETTINGS=~/scripts/perso-check-repo/settings.json
+
+# ======================================================================================
 # Aliases
 # ======================================================================================
 alias g='git fetch --all --prune && git log --oneline --all --graph --decorate -n 50'
@@ -50,9 +57,6 @@ alias clt='cl && lt'
 alias ff='cl && fastfetch'
 alias cfinit='printf -- "-std=c++98\n-Wall\n-Wextra\n-Werror\n-Ihdrs\n-Isrcs\n" > compile_flags.txt'
 alias iginit='printf -- "*.o\n.objs\ncompile_flags.txt\n" >> .gitignore'
-# check-repo config lives in the private perso-check-repo repo
-export CHECK_REPOS_CONFIG=~/scripts/perso-check-repo/repo_targets.json
-export CHECK_REPOS_SETTINGS=~/scripts/perso-check-repo/settings.json
 alias check='check-repo'
 alias ssh='kitten ssh'
 alias diff='kitten diff'
