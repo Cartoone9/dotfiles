@@ -17,9 +17,7 @@
 [Dependencies](#dependencies) ·
 [Credits](#credits)
 
-<!-- intro video goes here -->
-
-![desktop](assets/desktop.png)
+https://github.com/user-attachments/assets/8213fa76-a47c-4cad-9f6b-5964ad042818
 
 </div>
 
