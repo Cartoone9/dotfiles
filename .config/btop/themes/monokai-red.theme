@@ -5,10 +5,21 @@
 #   - graph gradients   -> grey -> red, but tuned for a text-dense TUI.
 #
 # btop colours load numbers, and (with proc_colors/proc_gradient) whole process
-# rows, by the gradient value. A dark->light->red ramp therefore renders every
-# low-load value in an unreadable near-black. So load is encoded by HUE, not
-# darkness: every stop sits at a legible lightness (grey -> rose -> red), so the
-# text stays readable at any load and the red is spread across the upper range.
+# rows, by the gradient value — so every gradient stop must stay legible.
+#
+# Gradient tuning:
+#  - cpu_*: light-grey base (same as the process dots), climbing through a
+#    light tint of the accent red on activity — idle stays quiet grey, load
+#    reads as the highlight colour.
+#  - process_*: starts at main_fg light grey, so program name / memB / cpu%
+#    read as normal text at rest and shift pink -> red as usage climbs.
+#    pid / command / user are coloured by btop's hardcoded row fade
+#    (main_fg -> inactive_fg); no theme key can recolour those columns alone.
+#  - mem/disk meters (used/free/cached/available): grey base with a grey-rose
+#    mid stop, so the ramp is continuous but the strong pink -> red swing
+#    lands in the upper half.
+#  - inactive_fg sits at dimmed4 so the top-to-bottom process row fade keeps
+#    visible depth.
 
 # Main background — monokai-pro bg. Ignored while theme_background = false
 # (btop falls through to the terminal background for transparency).
@@ -30,8 +41,9 @@ theme[selected_bg]="#4d4b4e"
 # Foreground of selected process row — bright, high contrast on the red
 theme[selected_fg]="#fcfcfa"
 
-# Inactive / disabled text — mid neutral grey (monokai-pro dimmed3)
-theme[inactive_fg]="#727072"
+# Inactive / disabled text — neutral grey (monokai-pro dimmed4); also the dark
+# end of the process-row fade and the meter backgrounds
+theme[inactive_fg]="#5b595c"
 
 # Text drawn on top of graphs (uptime, net scaling) — muted grey (dimmed2)
 theme[graph_text]="#939293"
@@ -54,36 +66,44 @@ theme[proc_box]="#5b595c"
 # Box divider line and small boxes line color
 theme[div_line]="#5b595c"
 
-# --- Graph & meter gradients: grey -> rose -> red, readable at every level ---
+# --- Graph & meter gradients ---
 
 # Temperature graph
 theme[temp_start]="#969696"
 theme[temp_mid]="#d1708a"
 theme[temp_end]="#f92672"
 
-# CPU graph
-theme[cpu_start]="#969696"
-theme[cpu_mid]="#d1708a"
+# CPU graph — same light-grey base as the process dots; activity climbs
+# through light red into the accent
+theme[cpu_start]="#c1c0c0"
+theme[cpu_mid]="#f5a3b8"
 theme[cpu_end]="#f92672"
 
-# Mem/Disk free meter
+# Process box gradient (program name, cpu% / memB / threads columns and the
+# per-process mini graphs) — starts at main_fg so those read as light-grey
+# text at rest, going rose -> red with load
+theme[process_start]="#c1c0c0"
+theme[process_mid]="#d1708a"
+theme[process_end]="#f92672"
+
+# Mem/Disk meters — grey base with a continuous ramp: the mid stop is a
+# grey-rose (greyer than the old #d1708a), so the low half stays grey-ish
+# while the swing to pink/red happens mostly in the upper half
+
 theme[free_start]="#969696"
-theme[free_mid]="#d1708a"
+theme[free_mid]="#bb7f8f"
 theme[free_end]="#f92672"
 
-# Mem/Disk cached meter
 theme[cached_start]="#969696"
-theme[cached_mid]="#d1708a"
+theme[cached_mid]="#bb7f8f"
 theme[cached_end]="#f92672"
 
-# Mem/Disk available meter
 theme[available_start]="#969696"
-theme[available_mid]="#d1708a"
+theme[available_mid]="#bb7f8f"
 theme[available_end]="#f92672"
 
-# Mem/Disk used meter
 theme[used_start]="#969696"
-theme[used_mid]="#d1708a"
+theme[used_mid]="#bb7f8f"
 theme[used_end]="#f92672"
 
 # Download graph
