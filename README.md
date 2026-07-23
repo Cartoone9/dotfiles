@@ -244,19 +244,6 @@ dispatch syntax anywhere, so nothing here is one deprecation away from
 breaking. Small compatibility touches too, like handling `.fullscreen`
 being an int on current Hyprland and a bool on older ones.
 
-### A btop theme that stays legible
-
-`.config/btop/themes/monokai-red.theme` is a hand-built Monokai theme
-(`color_theme = "monokai-red"`), and two choices make it more than a recolour.
-Its greys are the monokai-pro *dimmed* ramp — the same neutral greys nvim uses —
-so nothing leans blue the way the stock onedark theme it replaced did. And the
-graph gradient encodes load as **hue, not brightness**: btop paints load
-percentages, and with `proc_colors` whole process rows, in the gradient colour
-for their value, so a dark-to-red ramp renders every low-load number in an
-unreadable near-black. Instead it climbs grey → rose → red with every stop at a
-readable lightness, so idle cores and quiet processes stay legible while the red
-still marks the busy ones.
-
 > [!WARNING]
 > **Tuned to this machine.** The fan and temperature modules change color as
 > things heat up: the fan readout steps through warm, high and critical at
