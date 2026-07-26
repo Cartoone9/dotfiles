@@ -9,6 +9,8 @@ set -euo pipefail
 
 DOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LINKS_ONLY=${1:-}
+IS_MAC=0
+if [ "$(uname)" = Darwin ]; then IS_MAC=1; fi
 
 msg() { printf '\033[1;35m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m%s\033[0m\n' "$*"; }
@@ -210,12 +212,40 @@ link() {
 	echo "    linked $dst"
 }
 
+# macOS shares only the cross-platform configs. Linking all of .config/ here
+# would litter ~/.config with the Linux-only Hyprland/Waybar/rofi/swaync tree,
+# and would clobber ~/.config/kitty and ~/.config/eza, which are their own
+# repos (Kitty-config, eza-config) on this machine rather than copies of these.
+#
+# btop is deliberately themes-only. btop rewrites btop.conf on exit, so linking
+# the tracked file would have every btop session dirty this repo — and the
+# machine-specific bits live in there anyway (Apple GPU, disks, net_auto). Only
+# the theme set is shared; set color_theme = "monokai-red" in your local
+# ~/.config/btop/btop.conf to use it.
+install_links_macos() {
+	link "$DOT/.config/atuin" "$HOME/.config/atuin"
+
+	mkdir -p "$HOME/.config/btop"
+	# btop creates an empty themes/ itself; rmdir clears it so link can take the
+	# name. Only ever an empty dir, so this can't discard anything.
+	if [ -d "$HOME/.config/btop/themes" ] && [ ! -L "$HOME/.config/btop/themes" ]; then
+		rmdir "$HOME/.config/btop/themes" 2>/dev/null || true
+	fi
+	link "$DOT/.config/btop/themes" "$HOME/.config/btop/themes"
+}
+
 install_links() {
 	msg "Symlinking dotfiles into \$HOME"
 	for f in .zshrc .p10k.zsh .gitconfig .clang-format; do
 		link "$DOT/$f" "$HOME/$f"
 	done
 	mkdir -p "$HOME/.config"
+
+	if [ "$IS_MAC" = 1 ]; then
+		install_links_macos
+		return
+	fi
+
 	for d in "$DOT"/.config/*/; do
 		link "${d%/}" "$HOME/.config/$(basename "$d")"
 	done
@@ -244,28 +274,47 @@ install_links() {
 
 # -------------------------------------------------------------------- main ---
 if [ "$LINKS_ONLY" != --links-only ]; then
-	choose_wifi_menu
-	choose_main_mod
-	install_packages
-	install_fonts
-	install_cursor
-	install_zsh
+	if [ "$IS_MAC" = 1 ]; then
+		# Everything else in the full install is Fedora-specific: dnf/COPRs, the
+		# wifi menu (NetworkManager), fc-cache fonts and the Hyprland cursor
+		# theme. On macOS the packages come from Homebrew by hand; only the
+		# oh-my-zsh/p10k clone is portable.
+		install_zsh
+	else
+		choose_wifi_menu
+		choose_main_mod
+		install_packages
+		install_fonts
+		install_cursor
+		install_zsh
+	fi
 fi
 install_links
 setup_git_identity
-[ "$LINKS_ONLY" = --links-only ] || wire_wifi_menu
+if [ "$IS_MAC" != 1 ] && [ "$LINKS_ONLY" != --links-only ]; then
+	wire_wifi_menu
+fi
 
-if systemctl --user is-system-running &>/dev/null; then
+if [ "$IS_MAC" != 1 ] && systemctl --user is-system-running &>/dev/null; then
 	msg "Reloading systemd user units"
 	systemctl --user daemon-reload
 fi
 
-msg "Done. Log out and pick Hyprland at the greeter (units in .config/systemd enable themselves via the tracked wants/ symlinks)."
+if [ "$IS_MAC" = 1 ]; then
+	msg "Done. Restart your shell to pick up .zshrc."
+else
+	msg "Done. Log out and pick Hyprland at the greeter (units in .config/systemd enable themselves via the tracked wants/ symlinks)."
+fi
 msg "Git identity lives in ~/.gitconfig.local — check it before your first commit."
 
 # The config ships tuned to a ThinkPad P14s Gen 5 (AMD). Nothing above adapts
 # it to the running hardware, so say so out loud — the README warning is easy
-# to miss when you just run the script.
+# to miss when you just run the script. All of it is about the Linux desktop
+# tree, none of which macOS links, so it would only be noise there.
+if [ "$IS_MAC" = 1 ]; then
+	exit 0
+fi
+
 warn ""
 warn "!! This config is tuned to a ThinkPad P14s Gen 5 (AMD). A few spots are"
 warn "!! hardwired to that machine and want editing for yours (see README,"
