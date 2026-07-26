@@ -295,8 +295,15 @@ fh() {
 
 fkill() {
 	local pids
-	# Show PID, USER, COMMAND; multi-select
-	pids=$(ps -eo pid,user,comm --sort=pid | awk '{printf "%-8s %-15s %s\n",$1,$2,$3}' | fzf --bind 'esc:abort' --header="Select process(es) to kill" --multi | awk '{print $1}')
+	# Show PID, USER, COMMAND; multi-select.
+	# Portable across procps and BSD ps (macOS): --sort=pid is GNU-only, so sort
+	# here instead (sed 1d drops the header first). BSD ps prints COMM as a full
+	# executable path where procps prints the bare name, so awk takes the last
+	# /-separated component; rebuilding the field from $3 onward keeps app paths
+	# that contain spaces intact.
+	pids=$(ps -eo pid,user,comm | sed 1d | sort -n |
+		awk '{pid=$1; user=$2; $1=""; $2=""; sub(/^ +/,""); n=split($0,p,"/"); printf "%-8s %-15s %s\n", pid, user, p[n]}' |
+		fzf --bind 'esc:abort' --header="Select process(es) to kill" --multi | awk '{print $1}')
 
 	if [[ -n "$pids" ]]; then
 		# Use xargs to split lines properly
