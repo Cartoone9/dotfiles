@@ -19,10 +19,12 @@ plugins=(
 	zsh-syntax-highlighting
 )
 
-source "$ZSH/oh-my-zsh.sh"
-
-# Let topgrade handle updates; don't have OMZ prompt/check
+# Let topgrade handle updates; don't have OMZ prompt/check.
+# Must be set before sourcing oh-my-zsh.sh — that is what reads it, so setting
+# it afterwards left the "[oh-my-zsh] Would you like to update?" prompt firing.
 zstyle ':omz:update' mode disabled
+
+source "$ZSH/oh-my-zsh.sh"
 
 # ======================================================================================
 # Editor
