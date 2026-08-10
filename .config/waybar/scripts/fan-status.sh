@@ -1,5 +1,12 @@
 #!/bin/bash
-rpm=$(sensors 2>/dev/null | awk '/fan1/{print $2; exit}')
+# Read fan RPM straight from the thinkpad_acpi hwmon (2 EC registers) instead
+# of `sensors`, which sweeps every hwmon device (~12 EC reads per call)
+for h in /sys/class/hwmon/hwmon*; do
+    if [ "$(cat "$h/name" 2>/dev/null)" = "thinkpad" ]; then
+        rpm=$(cat "$h/fan1_input" 2>/dev/null)
+        break
+    fi
+done
 rpm=${rpm:-0}
 
 if [ "$rpm" -ge 4000 ]; then

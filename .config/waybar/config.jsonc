@@ -59,6 +59,10 @@
     },
 
     "temperature": {
+        // k10temp (CPU die, direct PCI read) instead of acpitz, whose reads go
+        // through the EC and cost an interrupt burst every poll
+        "hwmon-path-abs": "/sys/devices/pci0000:00/0000:00:18.3/hwmon",
+        "input-filename": "temp1_input",
         "format": "<span color='#888888'>TEMP</span> {temperatureC:02}°C",
         "critical-threshold": 85,
         "format-critical": "<span color='#888888'>TEMP</span> {temperatureC:02}°C",
