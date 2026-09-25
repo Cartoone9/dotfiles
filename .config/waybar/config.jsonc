@@ -9,7 +9,7 @@
 
     "modules-left": ["hyprland/workspaces", "custom/hidden"],
     "modules-center": ["clock"],
-    "modules-right": ["tray", "custom/sep", "memory", "cpu", "temperature", "custom/fan", "disk", "custom/sep2", "custom/network", "custom/battery", "custom/power"],
+    "modules-right": ["tray", "custom/sep", "memory", "cpu", "temperature", "custom/fan", "disk", "custom/sep2", "idle_inhibitor", "custom/network", "custom/battery", "custom/power"],
 
     "hyprland/workspaces": {
         "format": "{id}",
@@ -89,6 +89,18 @@
         "return-type": "json",
         "restart-interval": 5,
         "on-click": "~/.config/waybar/scripts/wifi-settings.sh"
+    },
+
+    "idle_inhibitor": {
+        // caffeine toggle: while active, Hyprland never reports idle, so
+        // hypridle's lock / screen-off / suspend timers all stay parked
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "\udb80\udd76",
+            "deactivated": "\udb80\udd76"
+        },
+        "tooltip-format-activated": "Caffeine ON - no auto lock / suspend",
+        "tooltip-format-deactivated": "Caffeine off - click to keep awake"
     },
 
     "custom/battery": {
