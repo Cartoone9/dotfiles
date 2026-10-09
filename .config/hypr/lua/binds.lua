@@ -82,6 +82,12 @@ bind("XF86AudioPlay", exec(scriptsDir .. "/MediaCtrl.sh --pause"), "play", { loc
 bind("XF86AudioNext", exec(scriptsDir .. "/MediaCtrl.sh --nxt"), "next track", { locked = true })
 bind("XF86AudioPrev", exec(scriptsDir .. "/MediaCtrl.sh --prv"), "previous track", { locked = true })
 bind("XF86AudioStop", exec(scriptsDir .. "/MediaCtrl.sh --stop"), "stop", { locked = true })
+-- Kindle (KOReader HTTP inspector on the PW12): turn pages from the laptop.
+-- On this ThinkPad (P14s Gen 5) F11/F12 without Fn arrive from "ThinkPad Extra Buttons" as
+-- KEY_LINK_PHONE (447 -> XF86LinkPhone) and KEY_BOOKMARKS (156 -> XF86Favorites); captured with
+-- `libinput debug-events --show-keycodes` 2026-10-09. Fn+F11/F12 still send plain F11/F12 to apps.
+bind("XF86LinkPhone", exec(scriptsDir .. "/KindlePage.sh prev"), "Kindle previous page (F11 key)")
+bind("XF86Favorites", exec(scriptsDir .. "/KindlePage.sh next"), "Kindle next page (star key, F12)")
 -- Laptop-specific keys
 bind("XF86KbdBrightnessDown", exec(scriptsDir .. "/BrightnessKbd.sh --dec"), "decrease keyboard brightness", { repeating = true })
 bind("XF86KbdBrightnessUp", exec(scriptsDir .. "/BrightnessKbd.sh --inc"), "increase keyboard brightness", { repeating = true })
